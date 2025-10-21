@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/09/30 20:25:29 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/10/21 15:22:08 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,8 @@ int is_operator(char c);
 int find_closing_quote(char *input, int start, char quote);
 void minishell_loop(t_minishell *ms);
 
+int ft_strcpy(char *dst, const char *src);
+int ft_strcat(char *dst, const char *src);  
+int	ft_strlen(const char *s);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/09/30 20:18:43 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/10/21 14:26:00 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ static void process_input(t_minishell *ms, char *input)
     t_token *tmp = ms->tokens;
     while (tmp)
     {
-        printf("TOKEN: [%s] type=%d\n",
-               tmp->value, tmp->type);
+        printf("TOKEN: [%s] type=%d expand = %d\n",
+               tmp->value, tmp->type, tmp->expand);
         tmp = tmp->next;
     }
     free_tokens(&ms->tokens);
@@ -82,15 +82,16 @@ void minishell_loop(t_minishell *ms)
 
 int main(int argc, char **argv, char **env)
 {
-    t_minishell	shell;
+    t_minishell	*shell;
 
 	(void)argv;
 	if (argc != 1)
 		return (1);
 	
-	shell = *minishell_init(env);
-	minishell_loop(&shell);
-	free_tokens(&shell.tokens);
+	shell = minishell_init(env);
+	minishell_loop(shell);
+	free_tokens(&shell->tokens);
+    free(shell);
 	// free_env(shell.env);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 17:26:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/02 17:39:46 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/10/21 14:34:12 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ char	*extract_word(char *input, int *i)
 	while (input[*i] && !is_space(input[*i])
 		&& !is_quote(input[*i]) && !is_operator(input[*i]))
 		(*i)++;
+	if(*i == start)
+		return (NULL);
 	len = *i - start;
 	token = ft_strdup(input + start, len);
 	return (token);
@@ -48,9 +50,12 @@ char	*extract_quoted(char *input, int *i, int *expand)
 	int		len;
 	char	*token;
 
-	(void)expand;
 
 	quote = input[*i];
+	if (quote == '"')
+		*expand = 1;
+	else
+		*expand = 0;
 	start = *i + 1;
 	len = find_closing_quote(input, *i, quote);
 	if (len == -1)
