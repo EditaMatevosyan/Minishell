@@ -6,11 +6,13 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/21 14:26:00 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/10/27 18:45:56 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int g_exit_status = 0;
 
 t_minishell	*minishell_init(char **env)
 {
@@ -21,12 +23,12 @@ t_minishell	*minishell_init(char **env)
 	if (!shell)
 		return (NULL);
 	shell->tokens = NULL;
-	// shell->env = env_copy(envp);
-	// if (!shell->env)
-	// {
-	// 	free(shell);
-	// 	return (NULL);
-	// }
+	shell->env = copy_env(env);
+	if (!shell->env)
+	{
+		free(shell);
+		return (NULL);
+	}
 	shell->fd_in = 0;
 	shell->fd_out = 1;
 	shell->fd_heredoc = 0;
@@ -44,25 +46,49 @@ static char *read_input(void)
 static void process_input(t_minishell *ms, char *input)
 {
     int rc;
+    t_cmd *cmds;
 
     if (!*input)
         return;
     add_history(input);
     rc = tokenize_input(ms, input);
     if (rc == -1)
+        return;
+
+    if (expand_tokens(ms->tokens, ms->env) == -1)
     {
         free_tokens(&ms->tokens);
         return;
     }
-    /* TODO expand + parse + exec. Debug for now: */
-    t_token *tmp = ms->tokens;
-    while (tmp)
+
+    cmds = parse_tokens(ms->tokens, ms->env);
+    if (!cmds)
     {
-        printf("TOKEN: [%s] type=%d expand = %d\n",
-               tmp->value, tmp->type, tmp->expand);
-        tmp = tmp->next;
+        free_tokens(&ms->tokens);
+        return;
     }
+
+    // TEMP: debug
+    print_cmd_list(cmds);
+
+    free_cmd_list(&cmds);
     free_tokens(&ms->tokens);
+}
+
+void print_cmd_list(t_cmd *cmd)
+{
+    int i = 1;
+    while (cmd)
+    {
+        printf("=== CMD %d ===\n", i++);
+        for (int j = 0; cmd->argv && cmd->argv[j]; j++)
+            printf("argv[%d]: %s\n", j, cmd->argv[j]);
+        if (cmd->infile)
+            printf("infile: %s\n", cmd->infile);
+        if (cmd->outfile)
+            printf("outfile: %s (append=%d)\n", cmd->outfile, cmd->append);
+        cmd = cmd->next;
+    }
 }
 
 void minishell_loop(t_minishell *ms)
@@ -91,7 +117,7 @@ int main(int argc, char **argv, char **env)
 	shell = minishell_init(env);
 	minishell_loop(shell);
 	free_tokens(&shell->tokens);
+	free_env(shell->env);
     free(shell);
-	// free_env(shell.env);
 	return (0);
 }

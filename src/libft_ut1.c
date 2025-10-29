@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils1.c                                           :+:      :+:    :+:   */
+/*   libft_ut1.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/30 15:45:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/02 17:39:52 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/10/26 15:52:28 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	is_operator(char c)
 	return (c == '|' || c == '<' || c == '>');
 }
 
-char *ft_strdup(char *s, int n)
+char *ft_strndup(char *s, int n)
 {
     char *dup;
     int i;
@@ -44,6 +44,24 @@ char *ft_strdup(char *s, int n)
         return NULL;
     i = 0;
     while(i < n && s[i])
+    {
+        dup[i] = s[i];
+        i++;
+    }
+    dup[i] = '\0';
+    return (dup);
+}
+
+char *ft_strdup(char *s)
+{
+    char *dup;
+    int len = ft_strlen(s);
+    int i = 0;
+
+    dup = malloc(len + 1);
+    if (!dup)
+        return (NULL);
+    while (i < len)
     {
         dup[i] = s[i];
         i++;

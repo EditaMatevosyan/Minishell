@@ -6,13 +6,13 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:38:20 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/02 17:29:04 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/10/27 19:26:11 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_token *new_token(char *value, t_token_type type, int expand)
+t_token *new_token(char *value, t_token_type type, int expand, int quoted)
 {
     t_token *tok;
     
@@ -25,6 +25,7 @@ t_token *new_token(char *value, t_token_type type, int expand)
     tok->value = value;
     tok->type = type;
     tok->expand = expand;
+    tok->quoted = quoted;
     tok->next = NULL;
     return(tok);
 }

@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 17:26:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/21 14:34:12 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/10/27 19:27:58 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ char	*extract_word(char *input, int *i)
 	if(*i == start)
 		return (NULL);
 	len = *i - start;
-	token = ft_strdup(input + start, len);
+	token = ft_strndup(input + start, len);
 	return (token);
 }
 
-char	*extract_quoted(char *input, int *i, int *expand)
+char	*extract_quoted(char *input, int *i, int *expand, int *quoted)
 {
 	char	quote;
 	int		start;
@@ -53,14 +53,20 @@ char	*extract_quoted(char *input, int *i, int *expand)
 
 	quote = input[*i];
 	if (quote == '"')
-		*expand = 1;
+	{
+    	*quoted = 1;   // double-quote
+    	*expand = 1;   // allow expansion
+	}
 	else
-		*expand = 0;
+	{
+		*quoted = 2;
+		*expand = 0;  
+	}
 	start = *i + 1;
 	len = find_closing_quote(input, *i, quote);
 	if (len == -1)
 		return (NULL); 
-	token = ft_strdup(input + start, len);
+	token = ft_strndup(input + start, len);
 	*i = start + len + 1; 
 	return (token);
 }
@@ -72,13 +78,14 @@ char	*extract_operator(char *input, int *i)
 	if ((input[*i] == '>' && input[*i + 1] == '>') ||
 		(input[*i] == '<' && input[*i + 1] == '<'))
 	{
-		token = ft_strdup(input + *i, 2);
+		token = ft_strndup(input + *i, 2);
 		*i += 2;
 	}
 	else
 	{
-		token = ft_strdup(input + *i, 1);
+		token = ft_strndup(input + *i, 1);
 		(*i)++;
 	}
 	return (token);
 }
+

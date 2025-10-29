@@ -14,6 +14,11 @@ SRCS_NAME = main.c \
 			tokenize_quotes.c \
 			libft_ut1.c \
 			libft_ut2.c \
+			libft_ut3.c \
+			copy_env.c \
+			tokenize_env.c \
+			expand_tokens.c \
+			ft_itoa.c \
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))

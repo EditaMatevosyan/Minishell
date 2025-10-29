@@ -1,0 +1,48 @@
+echo '"$USER"''$USER'"""$USER" //petq a verjiny baci
+echo ''''''''''$USER'''''''''' //petq a baci edmatevo
+
+//senc petq a lini
+echo               nenie_iri "$USER"            "$USER"nenie_iri
+//nenie_iri edmatevo edmatevonenie_iri 
+echo               nenie_iri "$USER"            "$USER"nenie_iri
+=== CMD 1 ===
+argv[0]: echo
+argv[1]: nenie_iri
+argv[2]: edmatevo
+argv[3]:
+
+
+
+echo $USER'$USER'text oui oui     oui  oui $USER oui      $USER ''
+//imy edmatevoyis heto pahum a oui oui, '$USER'text bac a toxum
+
+
+echo nenie"$USER"iri
+//chi bacum $y 
+//nenieedmatevoiri
+
+
+
+
+echo "$USER""Users/$USER/file""'$USER'"'$USER'
+//edmatevoUsers/edmatevo/file'edmatevo'$USER
+
+minishell> echo "$USER""Users/$USER/file""'$USER'"'$USER'
+=== CMD 1 ===
+argv[0]: echo
+argv[1]: /edmatevo/file'edmatevo'edmatevo
+
+
+
+minishell> echo " $USER    "'$PWD'
+=== CMD 1 ===
+argv[0]: echo
+argv[1]:  edmatevo    /home/edmatevo/Desktop/minishell
+minishell> echo '$PWD'
+=== CMD 1 ===
+argv[0]: echo
+argv[1]: $PWD
+minishell> echo ""'$PWD'
+=== CMD 1 ===
+argv[0]: echo
+argv[1]: /home/edmatevo/Desktop/minishell
