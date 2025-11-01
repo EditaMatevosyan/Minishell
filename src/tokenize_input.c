@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 14:11:20 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/01 15:17:00 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/01 18:38:41 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,10 @@ static int handle_word_token(t_minishell *shell, char *input, int *i)
 
 static void set_glued_flag_for_last(t_token *head, int glued)
 {
-    if (!head) return;
-    while (head->next) head = head->next;
+    if (!head) 
+        return;
+    while (head->next) 
+        head = head->next;
     head->glued = glued;
 }
 

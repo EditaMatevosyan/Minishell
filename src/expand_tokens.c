@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/01 15:10:52 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/01 18:57:56 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,19 @@ static char *join_expanded_arg(t_token **tok, t_env *env)
     while (t && t->type == T_WORD)
     {
         char *part = dup_or_expand_part(t, env);
-        if (!part) { free(arg); return NULL; }
+        if (!part) { 
+            free(arg); 
+            return NULL; 
+        }
 
-        if (!arg) arg = part;
+        if (!arg) 
+            arg = part;
         else {
             char *joined = malloc(ft_strlen(arg) + ft_strlen(part) + 1);
-            if (!joined) { free(arg); free(part); return NULL; }
+            if (!joined) { 
+                free(arg); 
+                free(part); 
+                return NULL; }
             ft_strcpy(joined, arg);
             ft_strcat(joined, part);
             free(arg); free(part);
@@ -140,30 +147,37 @@ static char *join_expanded_arg(t_token **tok, t_env *env)
 }
 
 
-static int handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
+static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 {
-    int append = ((*tok)->type == T_APPEND);
-    int type = (*tok)->type;
-    *tok = (*tok)->next;
-    if (!*tok || (*tok)->type != T_WORD)
-        return (fprintf(stderr, "syntax error near redirection\n"), -1);
+	char	*value;
+	int		append;
+	int		type;
 
-    char *value = ((*tok)->expand == 1)
-        ? expand_str((*tok)->value, env)
-        : ft_strdup((*tok)->value);
-    if (!value)
-        return (-1);
-
-    if (type == T_REDIR_IN || type == T_HEREDOC)
-        cmd->infile = value;
-    else
-    {
-        cmd->outfile = value;
-        cmd->append = append;
-    }
-    *tok = (*tok)->next;
-    return (0);
+	append = ((*tok)->type == T_APPEND);
+	type = (*tok)->type;
+	*tok = (*tok)->next;
+	if (!*tok || (*tok)->type != T_WORD)
+	{
+		fprintf(stderr, "syntax error near redirection\n");
+		return (-1);
+	}
+	if ((*tok)->expand == 1)
+		value = expand_str((*tok)->value, env);
+	else
+		value = ft_strdup((*tok)->value);
+	if (!value)
+		return (-1);
+	if (type == T_REDIR_IN || type == T_HEREDOC)
+		cmd->infile = value;
+	else
+	{
+		cmd->outfile = value;
+		cmd->append = append;
+	}
+	*tok = (*tok)->next;
+	return (0);
 }
+
 
 t_cmd *parse_command(t_token **cur, t_env *env)
 {
