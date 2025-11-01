@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 17:38:20 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/27 19:26:11 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/01 15:14:47 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,17 @@
 
 t_token *new_token(char *value, t_token_type type, int expand, int quoted)
 {
-    t_token *tok;
-    
-    tok = malloc(sizeof(t_token));
-    if(!tok)
-    {
-        free(value);    
-        return (NULL);
-    }
+    t_token *tok = malloc(sizeof(t_token));
+    if (!tok) { free(value); return NULL; }
     tok->value = value;
     tok->type = type;
     tok->expand = expand;
     tok->quoted = quoted;
+    tok->glued = 0;          // new
     tok->next = NULL;
-    return(tok);
+    return tok;
 }
+
 
 void add_token(t_token **list, t_token *new)
 {

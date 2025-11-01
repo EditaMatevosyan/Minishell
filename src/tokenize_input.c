@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 14:11:20 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/28 17:33:12 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/01 15:17:00 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ static int handle_quote_token(t_minishell *shell, char *input, int *i)
 {
     char *token;
     int expand, quoted = 0;
-
+    (void)input;
+    
     token = extract_quoted(input, i, &expand, &quoted);
     if (!token)
     {
@@ -56,42 +57,42 @@ static int handle_word_token(t_minishell *shell, char *input, int *i)
     return 0;
 }
 
+static void set_glued_flag_for_last(t_token *head, int glued)
+{
+    if (!head) return;
+    while (head->next) head = head->next;
+    head->glued = glued;
+}
+
 int tokenize_input(t_minishell *shell, char *input)
 {
     int i = 0;
+    int had_space = 1; 
 
-    if (!shell || !input)
-        return -1;
+    if (!shell || !input) return -1;
     free_tokens(&shell->tokens);
 
     while (input[i])
     {
-        while (is_space(input[i]))
-            i++;
-        if (!input[i])
-            break;
-        if (is_operator(input[i]))
-        {
-            if (handle_operator_token(shell, input, &i) == -1)
-                return -1;
+        had_space = 0;
+        while (is_space(input[i])) { i++; had_space = 1; }
+        if (!input[i]) break;
+
+        if (is_operator(input[i])) {
+            if (handle_operator_token(shell, input, &i) == -1) return -1;
+            set_glued_flag_for_last(shell->tokens, !had_space);
             continue;
         }
-        else if (is_quote(input[i]))     
-        {
-            if (handle_quote_token(shell, input, &i) == -1)
-                return -1;
+        if (is_quote(input[i])) {
+            if (handle_quote_token(shell, input, &i) == -1) return -1;
+            set_glued_flag_for_last(shell->tokens, !had_space);
             continue;
         }
-        else 
-        {
-            if (handle_word_token(shell, input, &i) == -1)
-                return -1;  
-            continue;
-        }
+        if (handle_word_token(shell, input, &i) == -1) return -1;
+        set_glued_flag_for_last(shell->tokens, !had_space);
     }
-    if (expand_tokens(shell->tokens, shell->env) == -1)
-        return (-1);
-    return 0;
+    return 0; 
 }
+
 
 

@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/27 19:28:39 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/01 15:14:58 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ typedef struct s_token
 {
     char *value;
     t_token_type type;
-    int expand; // 1 if the token should be expanded, 0 otherwise
-    int quoted; // 0 if unquoted, 1 if double-quoted, 2 if single-quoted
+    int expand; 
+    int quoted;
+    int glued;
     struct s_token *next;
 } t_token;
 

@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/28 18:36:37 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/01 15:10:52 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,44 +98,44 @@ t_cmd *parse_tokens(t_token *tokens, t_env *env)
     return (cmd_list);
 }
 
+static char *dup_or_expand_part(t_token *t, t_env *env)
+{
+    if (t->quoted == 2)         // single quotes: no expand
+        return ft_strdup(t->value);
+    if (t->expand)              // unquoted or double quotes with expand
+        return expand_str(t->value, env);
+    return ft_strdup(t->value);  // safety
+}
+
 static char *join_expanded_arg(t_token **tok, t_env *env)
 {
     char *arg = NULL;
+    t_token *t = *tok;
 
-    while (*tok && (*tok)->type == T_WORD)
+    while (t && t->type == T_WORD)
     {
-        char *part;
-        if ((*tok)->quoted == 2) // single-quote
-            part = ft_strdup((*tok)->value);
-        else if ((*tok)->expand) // unquoted or double-quote
-            part = expand_str((*tok)->value, env);
-        else
-            part = ft_strdup((*tok)->value);
+        char *part = dup_or_expand_part(t, env);
+        if (!part) { free(arg); return NULL; }
 
-        if (!part)
-            return (free(arg), NULL);
-
-        if (!arg)
-            arg = part;
-        else
-        {
+        if (!arg) arg = part;
+        else {
             char *joined = malloc(ft_strlen(arg) + ft_strlen(part) + 1);
-            if (!joined)
-                return (free(arg), free(part), NULL);
+            if (!joined) { free(arg); free(part); return NULL; }
             ft_strcpy(joined, arg);
             ft_strcat(joined, part);
-            free(arg);
-            free(part);
+            free(arg); free(part);
             arg = joined;
         }
 
-        // stop joining if next token is quoted differently
-        if ((*tok)->next && (*tok)->next->quoted != (*tok)->quoted)
-            break;
+        // consume current token
+        t = t->next;
 
-        *tok = (*tok)->next;
+        // stop if next token is NOT glued to the previous (i.e., there was whitespace)
+        if (!t || t->type != T_WORD || t->glued == 0)
+            break;
     }
 
+    *tok = t; // caller will continue from first unconsumed token
     return arg;
 }
 
