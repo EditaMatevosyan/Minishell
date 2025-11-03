@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/01 18:57:56 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/03 19:04:32 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,6 @@ static char *join_expanded_arg(t_token **tok, t_env *env)
         // consume current token
         t = t->next;
 
-        // stop if next token is NOT glued to the previous (i.e., there was whitespace)
         if (!t || t->type != T_WORD || t->glued == 0)
             break;
     }
@@ -178,19 +177,35 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	return (0);
 }
 
+static int count_args(t_token *tok)
+{
+    int count = 0;
+    while (tok && tok->type != T_PIPE)
+    {
+        if (tok->type == T_WORD)
+        {
+            count++;
+            while (tok && tok->type == T_WORD && tok->glued == 1)
+                tok = tok->next;
+        }
+        tok = tok->next;
+    }
+    return count;
+}
 
 t_cmd *parse_command(t_token **cur, t_env *env)
 {
     t_cmd  *cmd;
     int     argc = 0;
     t_token *tok;
+    int   arg_count;
 
     cmd = calloc(1, sizeof(t_cmd));
     if (!cmd)
         return (NULL);
 
-    /* safer: zero-initialize the argv array */
-    cmd->argv = calloc(64, sizeof(char *));
+    arg_count = count_args(*cur);
+    cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
         return (free(cmd), NULL);
 

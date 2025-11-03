@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 17:26:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/27 19:27:58 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/03 19:02:41 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,45 @@ char	*extract_word(char *input, int *i)
 	return (token);
 }
 
+static char *read_until_quote(char *input, char quote)
+{
+	char *line;
+	char *tmp;
+
+	while(1)
+	{
+		line = readline("> ");
+		if(!line)
+		{
+			fprintf(stderr,
+				"minishell: unexpected EOF while looking for matching `%c`\n",
+				quote);
+			return (input);
+		}
+		tmp = ft_strjoin(input, "\n");
+		free(input);
+		input = ft_strjoin(tmp, line);
+		free(tmp);
+		free(line);
+
+		int single = 0;
+		int doubleq = 0;
+		int i = 0;
+		while (input[i])
+		{
+			if (input[i] == '\'' && doubleq == 0)
+				single = !single;
+			else if (input[i] == '"' && single == 0)
+				doubleq = !doubleq;
+			i++;
+		}
+		if((quote == '\'' && single % 2 == 0) ||
+		   (quote == '"' && doubleq % 2 == 0))
+			break;
+	}
+	return (input);
+}
+
 char	*extract_quoted(char *input, int *i, int *expand, int *quoted)
 {
 	char	quote;
@@ -65,7 +104,12 @@ char	*extract_quoted(char *input, int *i, int *expand, int *quoted)
 	start = *i + 1;
 	len = find_closing_quote(input, *i, quote);
 	if (len == -1)
-		return (NULL); 
+	{
+		input = read_until_quote(input, quote);
+		len = find_closing_quote(input, *i, quote);
+		if (len == -1 && !input)
+			return (NULL);
+	}
 	token = ft_strndup(input + start, len);
 	*i = start + len + 1; 
 	return (token);

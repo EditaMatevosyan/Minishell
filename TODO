@@ -2,11 +2,3 @@
 //syntax
 
 
-edmatevo@c2r1s5:~$ echo "he'llo" 'wor"ld
-> '
-he'llo wor"ld
-
-edmatevo@c2r1s5:~$ echo "hello
-> "
-hello
-
