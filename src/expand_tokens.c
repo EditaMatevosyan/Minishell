@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/03 19:04:32 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/05 14:10:41 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,8 +187,11 @@ static int count_args(t_token *tok)
             count++;
             while (tok && tok->type == T_WORD && tok->glued == 1)
                 tok = tok->next;
+            if (tok)
+                tok = tok->next;
         }
-        tok = tok->next;
+        else
+            tok = tok->next;
     }
     return count;
 }

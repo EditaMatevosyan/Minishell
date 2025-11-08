@@ -1,4 +1,5 @@
 //redirections
 //syntax
+//builtins: cd, echo, env, exit, export, pwd, unset
 
 
