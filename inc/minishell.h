@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/01 15:14:58 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/10 15:48:25 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include <unistd.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 typedef enum e_token_type
 {
@@ -113,5 +115,22 @@ t_env *copy_env(char **envp);
 void free_env(t_env *env);
 t_cmd *parse_command(t_token **cur, t_env *env);
 t_cmd *parse_tokens(t_token *tokens, t_env *env);
+int	open_infile(t_cmd *cmd);
+int	open_outfile(t_cmd *cmd);
+void	change_stdin(t_cmd *cmd);
+void	change_stdout(t_cmd *cmd);
+void	print_env(t_minishell *shell);
+int ft_strcpy_without_null_termination(char *dst, const char *src);
+char	*join_path(char *dir, char *command);
+void	free_split(char **str);
+char	*get_full_path(t_cmd *cmd, t_env *env);
+int is_builtin(t_cmd *cmd);
+void	execute_command(t_cmd *cmd);
+int	word_count(char const *s, char c);
+char	*allocate_word(char *s, int len);
+void	free_memory(char **str, int count);
+int	split_string(char **arr, char *s, char c);
+char	**ft_split(char const *s, char c);
+void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell);
 
 #endif

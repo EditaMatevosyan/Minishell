@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/27 18:45:56 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/10 15:49:03 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,10 @@ static void process_input(t_minishell *ms, char *input)
 
     // TEMP: debug
     print_cmd_list(cmds);
+    execute_command_without_redirections(cmds, ms);
+
+	//TEMP: for printing environment variables
+	//print_env(ms);
 
     free_cmd_list(&cmds);
     free_tokens(&ms->tokens);
