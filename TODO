@@ -1,5 +1,17 @@
-//redirections
-//syntax
-//builtins: cd, echo, env, exit, export, pwd, unset
+redirections
+syntax
+builtins: cd, echo, env, exit, export, pwd, unset
 
 
+pipery nayel
+this case was wrong
+echo aa | echo bb
+
+
+
+for echo these cases don't work
+eCHo //should return an error message
+eCHo: command not found
+
+execve points to an invalid or corrupted memory region
+//minishell> echo -n -n asd

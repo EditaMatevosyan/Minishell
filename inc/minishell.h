@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/12 13:30:45 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/12 17:39:40 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,5 +134,8 @@ char	**ft_split(char const *s, char c);
 void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell);
 
 int syntax_check(t_token *tok);
+
+int exec_builtin(t_cmd *cmd, t_env **env);
+void echo(t_cmd *cmd);
 
 #endif

@@ -27,6 +27,12 @@ void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell)
     	return ;
 
 	//-----built-in execution here
+	if (is_builtin(cmd) == 0)
+	{
+		exec_builtin(cmd, &shell->env);
+		return ;
+	}
+	
 
 	pid = fork();
 	if (pid < 0)

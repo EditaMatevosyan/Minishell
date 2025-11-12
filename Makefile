@@ -24,7 +24,9 @@ SRCS_NAME = main.c \
 			redirections.c \
 			execute.c \
 			execution_utils.c \
-			syntax_validation.c
+			syntax_validation.c \
+			built_in.c \
+			echo.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))

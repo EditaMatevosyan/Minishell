@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 13:14:07 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/12 13:34:37 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/12 14:52:58 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static int check_edges(t_token *tok)
     last = tok;
     while(last->next)
         last = last->next;
-    if(is_operator(last->type))
+    if(operator_type(last->type))
     {
         print_syntax_error("newline");
         return 1;
