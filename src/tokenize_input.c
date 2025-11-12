@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 14:11:20 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/01 18:38:41 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/12 13:07:38 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static int handle_quote_token(t_minishell *shell, char *input, int *i)
     token = extract_quoted(input, i, &expand, &quoted);
     if (!token)
     {
-        fprintf(stderr, "minishell: syntax error: missing closing quote\n");
+        fprintf(stderr, "minishell:syntax error: unexpected end of file\n");
         return -1;
     }
     add_token(&shell->tokens, new_token(token, T_WORD, expand, quoted));

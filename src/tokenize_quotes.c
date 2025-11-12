@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 17:26:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/03 19:02:41 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/12 13:03:16 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ static char *read_until_quote(char *input, char quote)
 			fprintf(stderr,
 				"minishell: unexpected EOF while looking for matching `%c`\n",
 				quote);
-			return (input);
+			free(input);
+			return (NULL);
 		}
 		tmp = ft_strjoin(input, "\n");
 		free(input);
@@ -106,8 +107,10 @@ char	*extract_quoted(char *input, int *i, int *expand, int *quoted)
 	if (len == -1)
 	{
 		input = read_until_quote(input, quote);
+		if (!input)
+			return (NULL);
 		len = find_closing_quote(input, *i, quote);
-		if (len == -1 && !input)
+		if (len == -1)
 			return (NULL);
 	}
 	token = ft_strndup(input + start, len);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/05 14:10:41 by user             ###   ########.fr       */
+/*   Updated: 2025/11/12 13:39:01 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	*tok = (*tok)->next;
 	if (!*tok || (*tok)->type != T_WORD)
 	{
-		fprintf(stderr, "syntax error near redirection\n");
+		fprintf(stderr, "minishell: syntax error near redirection\n");
 		return (-1);
 	}
 	if ((*tok)->expand == 1)

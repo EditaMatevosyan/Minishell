@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/10 15:48:25 by romargar         ###   ########.fr       */
+/*   Updated: 2025/11/12 13:30:45 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,5 +132,7 @@ void	free_memory(char **str, int count);
 int	split_string(char **arr, char *s, char c);
 char	**ft_split(char const *s, char c);
 void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell);
+
+int syntax_check(t_token *tok);
 
 #endif
