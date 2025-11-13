@@ -17,6 +17,36 @@ int is_builtin(t_cmd *cmd)
 
 // 
 
+
+
+char **env_list_to_array(t_env *env)
+{
+    int len = 0;
+    t_env *tmp = env;
+    while (tmp)
+    {
+        len++;
+        tmp = tmp->next;
+    }
+
+    char **arr = malloc(sizeof(char *) * (len + 1));
+    if (!arr)
+        return NULL;
+
+    tmp = env;
+    for (int i = 0; i < len; i++)
+    {
+        arr[i] = ft_strjoin(tmp->var, "=");
+        char *tmp2 = arr[i];
+        arr[i] = ft_strjoin(tmp2, tmp->value ? tmp->value : "");
+        free(tmp2);
+        tmp = tmp->next;
+    }
+    arr[len] = NULL;
+    return arr;
+}
+
+
 //------------TEMP-----------
 void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell)
 {
@@ -26,12 +56,20 @@ void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell)
 	if (!cmd->argv || !cmd->argv[0])
     	return ;
 
-	//-----built-in execution here
-	if (is_builtin(cmd) == 0)
+	char **envp_array = env_list_to_array(shell->env);
+	if (!envp_array)
 	{
-		exec_builtin(cmd, &shell->env);
-		return ;
+    	perror("malloc");
+    	exit(1);
 	}
+	//execve(path, cmd->argv, envp_array);
+
+	//-----built-in execution here
+	// if (is_builtin(cmd) == 0)
+	// {
+	// 	exec_builtin(cmd, &shell->env);
+	// 	return ;
+	// }
 	
 
 	pid = fork();
@@ -50,7 +88,7 @@ void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell)
 			printf("minishell: the path is not found\n");
 			exit(127);                      //means command not found, childs memory is cleaned automatically by the OS, so no need to free anything
 		}
-		execve(path, cmd->argv, (char * const*)shell->env);
+		execve(path, cmd->argv, envp_array);
         perror("execve");
         exit(126);               //means command found but cannot be executed
 	}

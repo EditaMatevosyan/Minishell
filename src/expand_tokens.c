@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/12 13:39:01 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/13 15:46:03 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "minishell.h"
 
@@ -80,8 +80,8 @@ t_cmd *parse_tokens(t_token *tokens, t_env *env)
     while (tokens)
     {
         cmd = parse_command(&tokens, env);
-        if (tokens && tokens->type == T_PIPE)
-            ; // pipe handled in parse_command
+        /*if (tokens && tokens->type == T_PIPE)
+            ; // pipe handled in parse_command*/
         if (!cmd)
         {
             free_cmd_list(&cmd_list);
@@ -177,24 +177,37 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	return (0);
 }
 
+// static int count_args(t_token *tok)
+// {
+//     int count = 0;
+//     while (tok && tok->type != T_PIPE)
+//     {
+// 		if (tok->type == T_WORD)
+//         {
+//             count++;
+//             while (tok && tok->type == T_WORD && tok->glued == 1)
+//                 tok = tok->next;
+//             if (tok)
+//                 tok = tok->next;
+//         }
+//         else
+//             tok = tok->next;
+//     }
+//     return count;
+// }
+
 static int count_args(t_token *tok)
 {
     int count = 0;
     while (tok && tok->type != T_PIPE)
     {
         if (tok->type == T_WORD)
-        {
             count++;
-            while (tok && tok->type == T_WORD && tok->glued == 1)
-                tok = tok->next;
-            if (tok)
-                tok = tok->next;
-        }
-        else
-            tok = tok->next;
+        tok = tok->next;
     }
     return count;
 }
+
 
 t_cmd *parse_command(t_token **cur, t_env *env)
 {
@@ -208,6 +221,8 @@ t_cmd *parse_command(t_token **cur, t_env *env)
         return (NULL);
 
     arg_count = count_args(*cur);
+	//debug
+	printf("arg_count: %d\n", arg_count);
     cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
         return (free(cmd), NULL);

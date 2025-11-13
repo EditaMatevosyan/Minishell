@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Iinc -g3 -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -Iinc #-g3 -fsanitize=thread
 
 HEADERS = inc/minishell.h
 
