@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/12 13:30:11 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/15 15:59:54 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "minishell.h"
 
@@ -75,7 +75,7 @@ static void process_input(t_minishell *ms, char *input)
 
     // TEMP: debug
     print_cmd_list(cmds);
-    execute_command_without_redirections(cmds, ms);
+    execute_command(cmds, ms);
 
 	//TEMP: for printing environment variables
 	//print_env(ms);

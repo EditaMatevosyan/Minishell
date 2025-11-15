@@ -13,5 +13,29 @@ for echo these cases don't work
 eCHo //should return an error message
 eCHo: command not found
 
-execve points to an invalid or corrupted memory region
+execve points to an invalid or corrupted memory region         --->fixed
 //minishell> echo -n -n asd
+
+for invalid command free memory
+
+minishell> "hello $USER"  --->leak
+minishell> 'hello $USER'  --->leak         --->bolory invalid command vorpes
+minishell> hello $USER    --->leak
+
+
+
+argv[0]: kgdhsj
+minishell: the path is not found        --> es case-um gri command not found
+
+
+
+wc < hello < DOES_NOT_EXIST < bla    --->es case-y error e, bayc mer mot kashxati(vorovhetev cmd-n mi hat infile-i tex uni,
+u verjiny overwrite klini parsing-i jmnk)
+arg_count: 4
+=== CMD 1 === 
+argv[0]: wc                            ------>fixed
+infile: bla
+ 2  3 20
+
+
+

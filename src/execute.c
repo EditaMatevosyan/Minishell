@@ -48,7 +48,7 @@ char **env_list_to_array(t_env *env)
 
 
 //------------TEMP-----------
-void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell)
+void	execute_command(t_cmd *cmd, t_minishell *shell)
 {
 	pid_t	pid;
 	char	*path;

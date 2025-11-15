@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/13 15:46:03 by rosie            ###   ########.fr       */
+/*   Updated: 2025/11/15 17:44:57 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -151,6 +151,7 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	char	*value;
 	int		append;
 	int		type;
+	int		fd;
 
 	append = ((*tok)->type == T_APPEND);
 	type = (*tok)->type;
@@ -167,10 +168,21 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	if (!value)
 		return (-1);
 	if (type == T_REDIR_IN || type == T_HEREDOC)
+	{
+		fd = open(value, O_RDONLY);
+		if (fd == -1)
+		{
+			perror(value);
+			free(value);
+			return (-1);
+		}
+		close(fd);
+		free(cmd->infile);
 		cmd->infile = value;
+	}
 	else
 	{
-		cmd->outfile = value;
+		cmd->outfile = value;          
 		cmd->append = append;
 	}
 	*tok = (*tok)->next;
@@ -226,6 +238,11 @@ t_cmd *parse_command(t_token **cur, t_env *env)
     cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
         return (free(cmd), NULL);
+	else
+	{
+		for (int i = 0; i <= arg_count; i++)
+    	cmd->argv[i] = NULL;
+	}
 
     tok = *cur;
     while (tok && tok->type != T_PIPE)
@@ -262,11 +279,16 @@ void free_cmd(t_cmd *cmd)
     if (cmd->argv)
     {
         for (int i = 0; cmd->argv[i]; i++)
-            free(cmd->argv[i]);
+		{
+			if (cmd->argv[i])
+            	free(cmd->argv[i]);
+		}
         free(cmd->argv);
     }
-    free(cmd->infile);
-    free(cmd->outfile);
+	if (cmd->infile)
+    	free(cmd->infile);
+	if (cmd->outfile)
+    	free(cmd->outfile);
     free(cmd);
 }
 

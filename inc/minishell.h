@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/12 17:39:40 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/15 15:59:25 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -125,13 +125,12 @@ char	*join_path(char *dir, char *command);
 void	free_split(char **str);
 char	*get_full_path(t_cmd *cmd, t_env *env);
 int is_builtin(t_cmd *cmd);
-void	execute_command(t_cmd *cmd);
 int	word_count(char const *s, char c);
 char	*allocate_word(char *s, int len);
 void	free_memory(char **str, int count);
 int	split_string(char **arr, char *s, char c);
 char	**ft_split(char const *s, char c);
-void	execute_command_without_redirections(t_cmd *cmd, t_minishell *shell);
+void	execute_command(t_cmd *cmd, t_minishell *shell);
 
 int syntax_check(t_token *tok);
 
