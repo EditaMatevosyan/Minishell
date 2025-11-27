@@ -5,7 +5,10 @@ extern int g_exit_status;            //it is defined in another .c file, and i w
 int is_builtin(t_cmd *cmd)
 {
     if (!cmd->argv || !cmd->argv[0])
+	{
         return (0);
+	}
+	
     return (!ft_strcmp(cmd->argv[0], "echo")          //returns 0 if built-in, 1 if no
         || !ft_strcmp(cmd->argv[0], "cd")
         || !ft_strcmp(cmd->argv[0], "pwd")
@@ -56,21 +59,22 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	if (!cmd->argv || !cmd->argv[0])
     	return ;
 
+	// printf("Executing command: %s\n", cmd->argv[0]);   //for debugging
+	//-----built-in execution here
+	if (is_builtin(cmd))
+	{
+		// printf("Executing built-in command: %s\n", cmd->argv[0]);   //for debugging
+		g_exit_status = exec_builtin(cmd, &shell->env);
+		return ;
+	}
+	
 	char **envp_array = env_list_to_array(shell->env);
 	if (!envp_array)
 	{
-    	perror("malloc");
-    	exit(1);
+		perror("malloc");
+		exit(1);
 	}
 	//execve(path, cmd->argv, envp_array);
-
-	//-----built-in execution here
-	// if (is_builtin(cmd) == 0)
-	// {
-	// 	exec_builtin(cmd, &shell->env);
-	// 	return ;
-	// }
-	
 
 	pid = fork();
 	if (pid < 0)

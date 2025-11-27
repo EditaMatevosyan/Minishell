@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 15:56:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/12 17:19:43 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/26 18:27:34 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,11 @@ void echo(t_cmd *cmd)
 
     if (!cmd->argv)
         return;
-
     while (cmd->argv[i] && n_flag(cmd->argv[i]))
     {
         newline = 0;
         i++;
     }
-
     while (cmd->argv[i])
     {
         printf("%s", cmd->argv[i]);
