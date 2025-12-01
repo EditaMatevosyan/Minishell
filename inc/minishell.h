@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/26 18:50:30 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/11/27 17:04:25 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -22,6 +22,7 @@
 #include <readline/history.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <signal.h>
 
 typedef enum e_token_type
 {
@@ -45,10 +46,14 @@ typedef struct s_token
 
 typedef struct s_cmd
 {
-    char **argv;
-    char *infile;
-    char *outfile;
-    int append;
+    char	**argv;
+    char	*infile;
+    char	*outfile;
+    int		append;
+	int		has_heredoc;
+	char	*heredoc_delim;
+	char	*heredoc_file;
+	int		heredoc_expand;
     struct s_cmd *next;
 } t_cmd;
 

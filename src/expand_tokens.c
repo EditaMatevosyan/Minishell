@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/15 17:44:57 by rosie            ###   ########.fr       */
+/*   Updated: 2025/11/27 16:59:18 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -145,7 +145,6 @@ static char *join_expanded_arg(t_token **tok, t_env *env)
     return arg;
 }
 
-
 static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 {
 	char	*value;
@@ -156,6 +155,18 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	append = ((*tok)->type == T_APPEND);
 	type = (*tok)->type;
 	*tok = (*tok)->next;
+	
+	//handle heredoc
+	if (type == T_HEREDOC)
+	{
+		cmd->has_heredoc = 1;
+		cmd->heredoc_expand = (*tok)->expand;
+		cmd->heredoc_delim = ft_strdup((*tok)->value);
+		if (!cmd->heredoc_delim)
+			return (-1);
+		*tok = (*tok)->next;
+        return 0;
+	}
 	if (!*tok || (*tok)->type != T_WORD)
 	{
 		fprintf(stderr, "minishell: syntax error near redirection\n");
@@ -167,7 +178,7 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 		value = ft_strdup((*tok)->value);
 	if (!value)
 		return (-1);
-	if (type == T_REDIR_IN || type == T_HEREDOC)
+	if (type == T_REDIR_IN)
 	{
 		fd = open(value, O_RDONLY);
 		if (fd == -1)
@@ -180,33 +191,15 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 		free(cmd->infile);
 		cmd->infile = value;
 	}
-	else
+	else if (type == T_REDIR_OUT || type == T_APPEND)
 	{
+		free(cmd->outfile);
 		cmd->outfile = value;          
 		cmd->append = append;
 	}
 	*tok = (*tok)->next;
 	return (0);
 }
-
-// static int count_args(t_token *tok)
-// {
-//     int count = 0;
-//     while (tok && tok->type != T_PIPE)
-//     {
-// 		if (tok->type == T_WORD)
-//         {
-//             count++;
-//             while (tok && tok->type == T_WORD && tok->glued == 1)
-//                 tok = tok->next;
-//             if (tok)
-//                 tok = tok->next;
-//         }
-//         else
-//             tok = tok->next;
-//     }
-//     return count;
-// }
 
 static int count_args(t_token *tok)
 {
@@ -219,7 +212,6 @@ static int count_args(t_token *tok)
     }
     return count;
 }
-
 
 t_cmd *parse_command(t_token **cur, t_env *env)
 {
