@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/27 17:04:25 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/02 13:08:10 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -52,7 +52,7 @@ typedef struct s_cmd
     int		append;
 	int		has_heredoc;
 	char	*heredoc_delim;
-	char	*heredoc_file;
+	int		heredoc_fd;
 	int		heredoc_expand;
     struct s_cmd *next;
 } t_cmd;
@@ -142,5 +142,6 @@ int syntax_check(t_token *tok);
 int exec_builtin(t_cmd *cmd, t_env **env);
 void echo(t_cmd *cmd);
 void pwd(t_cmd *cmd);
+int	process_heredoc(t_cmd *cmd, t_env *env);
 
 #endif

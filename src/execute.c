@@ -86,6 +86,11 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	{
 		change_stdin(cmd);
 		change_stdout(cmd);
+		if (cmd->has_heredoc)
+    	{
+        	dup2(cmd->heredoc_fd, STDIN_FILENO);      //STDIN_FILENO points to the same file as heredoc_fd
+        	close(cmd->heredoc_fd);
+    	}
 		path = get_full_path(cmd, shell->env);
 		if (!path)
 		{
@@ -101,11 +106,8 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 		waitpid(pid, &g_exit_status, 0);          //writes the exit status of the childs termination in g_exit_status
 		/*
 		waitpid not just writes the exit status of the process, but it is something encoded that shows:
-
 		Did the child exit normally (exit() or return from main)?
-
 		Did it terminate because of a signal?
-
 		If it exited normally, what exit code did it return?
 		*/
 
