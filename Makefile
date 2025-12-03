@@ -15,6 +15,7 @@ SRCS_NAME = main.c \
 			libft_ut1.c \
 			libft_ut2.c \
 			libft_ut3.c \
+			libft_ut4.c \
 			copy_env.c \
 			tokenize_env.c \
 			expand_tokens.c \
@@ -28,6 +29,8 @@ SRCS_NAME = main.c \
 			built_in.c \
 			echo.c \
 			pwd.c \
+			env.c \
+			exit.c \
 			process_heredoc.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)

@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/30 15:45:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/10/26 15:52:28 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/03 10:11:06 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int is_special(char c)
 
 int	is_space(char c)
 {
-	return (c == ' ' || c == '\t');
+	return (c == ' ' || (c >= 9 && c <= 13));
 }
 
 int	is_quote(char c)

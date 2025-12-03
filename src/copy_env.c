@@ -3,43 +3,66 @@
 /*                                                        :::      ::::::::   */
 /*   copy_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:50:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/05 14:10:20 by user             ###   ########.fr       */
+/*   Updated: 2025/12/03 10:05:38 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static t_env *env_node_new(char *s)
+{
+    t_env *node;
+    char *eq;
+
+    node = malloc(sizeof(*node));
+    if (!node)
+        return (NULL);
+    eq = ft_strchr(s, '=');
+    if(eq)
+    {
+        node->var = ft_substr(s, 0, eq - s);
+        if (!node->var)
+            return (free(node), NULL);
+        node->value = ft_strdup(eq + 1);
+        if (!node->value)
+            return (free(node->var), free(node), NULL);
+    }
+    else
+    {
+        node->var = ft_strdup(s);
+        if (!node->var)
+            return (free(node), NULL);
+        node->value = NULL;
+    }
+    node->next = NULL;
+    return (node);
+}
+
 t_env *copy_env(char **envp)
 {
-    t_env *head = NULL;
+    t_env *head;
     t_env *node;
-    int i = 0;
+    int i;
 
+    head = NULL;
+    i = 0;
     while (envp[i])
     {
-        node = malloc(sizeof(t_env));
+        node = env_node_new(envp[i]);
         if (!node)
+        {
+            free_env(head);
             return (NULL);
-        char *eq = ft_strchr(envp[i], '=');
-        if (eq)
-        {
-            node->var = ft_substr(envp[i], 0, eq - envp[i]);
-            node->value = ft_strdup(eq + 1);
         }
-        else
-        {
-            node->var = ft_strdup(envp[i]);
-            node->value = NULL;
-        }
-        node->next = NULL;
         env_add_back(&head, node);
         i++;
     }
     return (head);
 }
+
 void free_env(t_env *env)
 {
     t_env *tmp;

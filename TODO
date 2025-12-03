@@ -38,4 +38,5 @@ infile: bla
  2  3 20
 
 
-
+echo "$" ---> should print $
+echo $ ---> should print $

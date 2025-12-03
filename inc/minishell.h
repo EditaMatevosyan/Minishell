@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/02 13:08:10 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/03 10:18:17 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -71,6 +71,7 @@ typedef struct s_minishell
     int fd_in;
     int fd_out;
     int fd_heredoc;
+    int exit_status;
 } t_minishell;
 
 extern int g_exit_status;
@@ -107,6 +108,11 @@ char *ft_strchr(char *s, int c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 int ft_isalnum(int c);
 char	*ft_itoa(int n);
+void ft_putstr_fd(char *s, int fd);
+const char *skip_spaces(const char *str);
+int acc_digits(const char **ps, int sign, long long *acc_out);
+int ft_atoll(const char *s, long long *out);
+void cleanup_and_exit(t_minishell *shell, int status);
 
 char *get_env_value(t_env *env, char *key);
 t_env *env_new(char *var, char *value);
@@ -139,9 +145,11 @@ void	execute_command(t_cmd *cmd, t_minishell *shell);
 
 int syntax_check(t_token *tok);
 
-int exec_builtin(t_cmd *cmd, t_env **env);
+int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell);
 void echo(t_cmd *cmd);
 void pwd(t_cmd *cmd);
 int	process_heredoc(t_cmd *cmd, t_env *env);
+void env_print(t_env *env, char **envp);
+void	builtin_exit(t_cmd *cmd, t_minishell *shell);
 
 #endif

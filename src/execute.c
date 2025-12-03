@@ -55,6 +55,7 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 {
 	pid_t	pid;
 	char	*path;
+	int status;
 
 	if (!cmd->argv || !cmd->argv[0])
     	return ;
@@ -64,7 +65,8 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	if (is_builtin(cmd))
 	{
 		// printf("Executing built-in command: %s\n", cmd->argv[0]);   //for debugging
-		g_exit_status = exec_builtin(cmd, &shell->env);
+		status = exec_builtin(cmd, &shell->env, shell);
+		shell->exit_status = (unsigned char)status;
 		return ;
 	}
 	
@@ -72,6 +74,7 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	if (!envp_array)
 	{
 		perror("malloc");
+		shell->exit_status = 1;
 		exit(1);
 	}
 	//execve(path, cmd->argv, envp_array);
@@ -80,6 +83,7 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	if (pid < 0)
 	{
 		perror("fork");
+		shell->exit_status = 1;
 		return;
 	}
 	if (pid == 0)

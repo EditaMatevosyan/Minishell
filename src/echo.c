@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 15:56:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/11/26 18:27:34 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/03 10:37:14 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,11 @@ void echo(t_cmd *cmd)
     }
     while (cmd->argv[i])
     {
-        printf("%s", cmd->argv[i]);
+        ft_putstr_fd(cmd->argv[i], 1);
         if (cmd->argv[i + 1])
-            printf(" ");
+            ft_putstr_fd(" ", 1);
         i++;
     }
     if (newline)
-        printf("\n");
+        ft_putstr_fd("\n", 1);
 }
