@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 10:18:17 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/03 11:48:34 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ int ft_atoll(const char *s, long long *out);
 void cleanup_and_exit(t_minishell *shell, int status);
 
 char *get_env_value(t_env *env, char *key);
+int	set_env_value(t_env **env, const char *key, const char *val);
 t_env *env_new(char *var, char *value);
 void env_add_back(t_env **env, t_env *new);
 t_env *env_init(char **envp);
@@ -151,5 +152,6 @@ void pwd(t_cmd *cmd);
 int	process_heredoc(t_cmd *cmd, t_env *env);
 void env_print(t_env *env, char **envp);
 void	builtin_exit(t_cmd *cmd, t_minishell *shell);
+void builtin_cd(t_cmd *cmd, t_minishell *shell);
 
 #endif
