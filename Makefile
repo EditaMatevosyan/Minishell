@@ -31,7 +31,8 @@ SRCS_NAME = main.c \
 			pwd.c \
 			env.c \
 			exit.c \
-			process_heredoc.c
+			process_heredoc.c \
+			pipes.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))

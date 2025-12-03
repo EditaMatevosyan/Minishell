@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 11:48:34 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/03 17:37:55 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -153,5 +153,13 @@ int	process_heredoc(t_cmd *cmd, t_env *env);
 void env_print(t_env *env, char **envp);
 void	builtin_exit(t_cmd *cmd, t_minishell *shell);
 void builtin_cd(t_cmd *cmd, t_minishell *shell);
+int	count_commands(t_cmd	*cmd_list);
+int		execute_pipeline(t_cmd *cmd_list, t_minishell *ms);
+int		count_args(t_token *tok);
+int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n);
+void	setup_fds(t_cmd *cmds, int i, int n, int **fds, t_minishell *ms);
+int		**create_pipes(int n);
+void	close_fds(int	**fds, int n);
+char **env_list_to_array(t_env *env);
 
 #endif

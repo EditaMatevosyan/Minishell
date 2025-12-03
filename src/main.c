@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 10:11:48 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/03 17:22:02 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "minishell.h"
 
@@ -66,7 +66,6 @@ static void process_input(t_minishell *ms, char *input)
         free_tokens(&ms->tokens);
         return;
     }
-
     cmds = parse_tokens(ms->tokens, ms->env);       //this is the head of the liked list
     if (!cmds)
     {
@@ -88,8 +87,12 @@ static void process_input(t_minishell *ms, char *input)
 		tmp = tmp->next;
 	}
     // TEMP: debug
-    print_cmd_list(cmds);
-    execute_command(cmds, ms);
+    //print_cmd_list(cmds);
+    //execute_command(cmds, ms);
+	if (count_commands(cmds) == 1)
+		execute_command(cmds, ms);
+	else
+		execute_pipeline(cmds, ms);
 
 	//TEMP: for printing environment variables
 	//print_env(ms);

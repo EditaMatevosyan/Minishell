@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 14:09:54 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/03 16:09:58 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -213,7 +213,7 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	return (0);
 }
 
-static int count_args(t_token *tok)
+int count_args(t_token *tok)
 {
     int count = 0;
     while (tok && tok->type != T_PIPE)
@@ -238,7 +238,7 @@ t_cmd *parse_command(t_token **cur, t_env *env)
 
     arg_count = count_args(*cur);
 	//debug
-	printf("arg_count: %d\n", arg_count);
+	//printf("arg_count: %d\n", arg_count);
     cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
         return (free(cmd), NULL);
