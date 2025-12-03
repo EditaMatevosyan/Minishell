@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 11:22:06 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/03 14:09:54 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "minishell.h"
 
@@ -168,7 +168,11 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	if (type == T_HEREDOC)
 	{
 		cmd->has_heredoc = 1;
-		cmd->heredoc_expand = (*tok)->expand;
+		if ((*tok)->quoted == 1 || (*tok)->quoted == 2)
+    		cmd->heredoc_expand = 0;
+		else
+    		cmd->heredoc_expand = 1;
+
 		cmd->heredoc_delim = ft_strdup((*tok)->value);
 		if (!cmd->heredoc_delim)
 			return (-1);
