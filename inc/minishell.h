@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 17:37:55 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/04 15:26:39 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -44,6 +44,14 @@ typedef struct s_token
     struct s_token *next;
 } t_token;
 
+typedef struct s_redir         //node for redirection linked list
+{
+	int		type;        //< or > or << or >>
+	char	*delim_or_filename;
+	int		heredoc_fd;         //read end for heredoc
+} t_redir;
+
+
 typedef struct s_cmd
 {
     char	**argv;
@@ -55,6 +63,7 @@ typedef struct s_cmd
 	int		heredoc_fd;
 	int		heredoc_expand;
     struct s_cmd *next;
+	t_redir *redir;           // linked list of redirections, because if there are multiple redirections, i need to execute the last one only
 } t_cmd;
 
 typedef struct s_env
@@ -157,9 +166,10 @@ int	count_commands(t_cmd	*cmd_list);
 int		execute_pipeline(t_cmd *cmd_list, t_minishell *ms);
 int		count_args(t_token *tok);
 int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n);
-void	setup_fds(t_cmd *cmds, int i, int n, int **fds, t_minishell *ms);
+void	setup_fds(t_cmd *cmds, int i, int n, int **fds);
 int		**create_pipes(int n);
 void	close_fds(int	**fds, int n);
-char **env_list_to_array(t_env *env);
+char	**env_list_to_array(t_env *env);
+int		process_all_heredocs(t_cmd *cmd_list, t_minishell *ms);
 
 #endif

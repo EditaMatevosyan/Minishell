@@ -51,56 +51,67 @@ void	close_fds(int	**fds, int n)
 	}
 }
 
-void	setup_fds(t_cmd *cmds, int i, int n, int **fds, t_minishell *ms)
+void	setup_fds(t_cmd *cmds, int i, int n, int **fds)
 {
 	if (i > 0)       //if its not the first command, change the stdin/stdout
 		dup2(fds[i - 1][0], STDIN_FILENO);
 	if (i < n - 1)         //if its not the last command
         dup2(fds[i][1], STDOUT_FILENO);
+	if (cmds->has_heredoc)
+        dup2(cmds->heredoc_fd, STDIN_FILENO);
 	close_fds(fds, n);
-	if (cmds->has_heredoc == 1)
-	{
-		if (process_heredoc(cmds, ms->env) == -1)
-		{
-			free_cmd_list(&cmds);
-			free_tokens(&ms->tokens);
-			return;
-		}
-	}
 	change_stdin(cmds);
     change_stdout(cmds);
 }
 
+int process_all_heredocs(t_cmd *cmd_list, t_minishell *ms)
+{
+    t_cmd *cur = cmd_list;
+
+    while (cur)
+    {
+        if (cur->has_heredoc)
+        {
+            if (process_heredoc(cur, ms->env) == -1)
+                return (-1);
+        }
+        cur = cur->next;
+    }
+    return 0;
+}
+
 int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
 {
-    t_cmd *cur;
-    int i;
+    t_cmd *cur = cmd_list;
+    int i = 0;
     pid_t pid;
-	char **envp;
-	char *path;
+    char **envp;
+    char *path;
 
-    cur = cmd_list;
-    i = 0;
     while (cur)
     {
         pid = fork();
         if (pid < 0)
-            return (-1);
+            return -1;
+
         if (pid == 0)
         {
-            setup_fds(cur, i, n, fds, ms);
-            //-----------BUILT-IN LOGIC HERE-------------
+            setup_fds(cur, i, n, fds);
+
+            // ------------built-in logic here-------------
+
             envp = env_list_to_array(ms->env);
             path = get_full_path(cur, ms->env);
             if (!path)
                 exit(127);
             execve(path, cur->argv, envp);
+            perror("execve");
             exit(126);
         }
         cur = cur->next;
         i++;
     }
-    return (0);
+    return 0;
 }
 
 
@@ -108,23 +119,40 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
 {
     int n;
     int **fds;
+	int	i;
+	t_cmd *cur;
 
     n = count_commands(cmd_list);
     fds = create_pipes(n);
     if (n > 1 && !fds)
         return (-1);
-    if (fork_and_execute(cmd_list, ms, fds, n) == -1)
-        return (-1);
-
-    close_fds(fds, n);
-    for (int i = 0; i < n - 1; i++)
-        free(fds[i]);
-    free(fds);
-
-    while (n > 0)
+    if (process_all_heredocs(cmd_list, ms) == -1)
 	{
-		wait(NULL);
-		n--;
+    	return (-1);
 	}
+	if (fork_and_execute(cmd_list, ms, fds, n) == -1)
+	{
+    	return (-1);
+	}
+	close_fds(fds, n);
+	i = 0;
+	while (i < n - 1)
+	{
+		free(fds[i]);
+		i++;
+	}
+	free(fds);
+	cur = cmd_list;
+    while (cur)
+    {
+        if (cur->has_heredoc)
+            close(cur->heredoc_fd);
+        cur = cur->next;
+    }
+    while (n > 0)
+    {
+        wait(NULL);
+        n--;
+    }
     return (0);
 }

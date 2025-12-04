@@ -44,3 +44,6 @@ echo $ ---> should print $
 
 
 nayel linked list-i u array-i pahy execve-i u export-i jmnk, +pipe-eri mej
+
+
+double heredoc in one command does not work

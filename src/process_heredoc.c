@@ -34,5 +34,6 @@ int	process_heredoc(t_cmd *cmd, t_env *env)
 	}
 	close(fd[1]);       //closing the write end becasue we are not going to use it again
 	cmd->heredoc_fd = fd[0];       //the command will read the input from here
+	close(fd[1]);     //close the write end
 	return (0);
 }

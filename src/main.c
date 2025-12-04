@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 17:22:02 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/04 16:16:52 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -72,20 +72,7 @@ static void process_input(t_minishell *ms, char *input)
         free_tokens(&ms->tokens);
         return;
     }
-	t_cmd	*tmp = cmds;      //this is a temporary pointer not to lose the head of the linked list
-	while (tmp)
-	{
-		if (tmp->has_heredoc == 1)
-		{
-			if (process_heredoc(tmp, ms->env) == -1)
-			{
-				free_cmd_list(&cmds);
-				free_tokens(&ms->tokens);
-				return;
-			}
-		}
-		tmp = tmp->next;
-	}
+	
     // TEMP: debug
     //print_cmd_list(cmds);
     //execute_command(cmds, ms);
