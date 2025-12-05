@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/04 16:16:52 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/04 18:00:54 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -73,17 +73,10 @@ static void process_input(t_minishell *ms, char *input)
         return;
     }
 	
-    // TEMP: debug
-    //print_cmd_list(cmds);
-    //execute_command(cmds, ms);
 	if (count_commands(cmds) == 1)
 		execute_command(cmds, ms);
 	else
 		execute_pipeline(cmds, ms);
-
-	//TEMP: for printing environment variables
-	//print_env(ms);
-
     free_cmd_list(&cmds);
     free_tokens(&ms->tokens);
 }

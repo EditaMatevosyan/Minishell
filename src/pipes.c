@@ -53,12 +53,26 @@ void	close_fds(int	**fds, int n)
 
 void	setup_fds(t_cmd *cmds, int i, int n, int **fds)
 {
+	int	last_heredoc;
+
 	if (i > 0)       //if its not the first command, change the stdin/stdout
 		dup2(fds[i - 1][0], STDIN_FILENO);
 	if (i < n - 1)         //if its not the last command
         dup2(fds[i][1], STDOUT_FILENO);
-	if (cmds->has_heredoc)
-        dup2(cmds->heredoc_fd, STDIN_FILENO);
+	if (cmds->heredoc_count > 0)
+	{
+    	last_heredoc = cmds->heredoc_count - 1;
+    	if (cmds->heredoc_fds &&
+        cmds->heredoc_fds[last_heredoc] != -1)
+    	{
+        	dup2(cmds->heredoc_fds[last_heredoc], STDIN_FILENO);
+        	for (int k = 0; k < cmds->heredoc_count; k++)
+    		{
+        		if (cmds->heredoc_fds[k] != -1)
+            		close(cmds->heredoc_fds[k]);
+    		}
+    	}
+	}
 	close_fds(fds, n);
 	change_stdin(cmds);
     change_stdout(cmds);
@@ -68,12 +82,18 @@ int process_all_heredocs(t_cmd *cmd_list, t_minishell *ms)
 {
     t_cmd *cur = cmd_list;
 
+	//debug
+	printf("heredoc_count:%d\n", cur->heredoc_count);
     while (cur)
     {
-        if (cur->has_heredoc)
+        if (cur->heredoc_count > 0)
         {
             if (process_heredoc(cur, ms->env) == -1)
+			{
+				//debug
+				printf("process_heredoc() fails\n");
                 return (-1);
+			}
         }
         cur = cur->next;
     }
@@ -120,6 +140,7 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
     int n;
     int **fds;
 	int	i;
+	int	j;
 	t_cmd *cur;
 
     n = count_commands(cmd_list);
@@ -145,8 +166,16 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
 	cur = cmd_list;
     while (cur)
     {
-        if (cur->has_heredoc)
-            close(cur->heredoc_fd);
+		j = 0;
+		while (j < cur->heredoc_count)
+		{
+			close(cur->heredoc_fds[j]);
+        	free(cur->heredoc_delims[j]); 
+			j++;
+		}
+        free(cur->heredoc_fds);
+    	free(cur->heredoc_delims);
+    	free(cur->heredoc_expands); 
         cur = cur->next;
     }
     while (n > 0)

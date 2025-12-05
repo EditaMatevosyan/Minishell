@@ -56,20 +56,21 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	pid_t	pid;
 	char	*path;
 	int status;
+	int	last_heredoc;
 
 	if (!cmd->argv || !cmd->argv[0])
     	return ;
-
-	// printf("Executing command: %s\n", cmd->argv[0]);   //for debugging
-	//-----built-in execution here
+	if (cmd->heredoc_count > 0)
+    {
+        if (process_heredoc(cmd, shell->env) == -1)
+            return;
+    }
 	if (is_builtin(cmd))
 	{
-		// printf("Executing built-in command: %s\n", cmd->argv[0]);   //for debugging
 		status = exec_builtin(cmd, &shell->env, shell);
 		shell->exit_status = (unsigned char)status;
 		return ;
 	}
-	
 	char **envp_array = env_list_to_array(shell->env);
 	if (!envp_array)
 	{
@@ -77,8 +78,6 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 		shell->exit_status = 1;
 		exit(1);
 	}
-	//execve(path, cmd->argv, envp_array);
-
 	pid = fork();
 	if (pid < 0)
 	{
@@ -90,11 +89,22 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	{
 		change_stdin(cmd);
 		change_stdout(cmd);
-		if (cmd->has_heredoc)
-    	{
-        	dup2(cmd->heredoc_fd, STDIN_FILENO);      //STDIN_FILENO points to the same file as heredoc_fd
-        	close(cmd->heredoc_fd);
-    	}
+		//debug
+		printf("heredoc count: %d\n",cmd->heredoc_count);
+		if (cmd->heredoc_count > 0)
+		{
+    		last_heredoc = cmd->heredoc_count - 1;
+    		if (cmd->heredoc_fds &&
+        	cmd->heredoc_fds[last_heredoc] != -1)
+    		{
+        		dup2(cmd->heredoc_fds[last_heredoc], STDIN_FILENO);
+        		for (int k = 0; k < cmd->heredoc_count; k++)
+    			{
+        			if (cmd->heredoc_fds[k] != -1)
+            			close(cmd->heredoc_fds[k]);
+    			}
+    		}
+		}
 		path = get_full_path(cmd, shell->env);
 		if (!path)
 		{
@@ -108,12 +118,6 @@ void	execute_command(t_cmd *cmd, t_minishell *shell)
 	else
 	{
 		waitpid(pid, &g_exit_status, 0);          //writes the exit status of the childs termination in g_exit_status
-		/*
-		waitpid not just writes the exit status of the process, but it is something encoded that shows:
-		Did the child exit normally (exit() or return from main)?
-		Did it terminate because of a signal?
-		If it exited normally, what exit code did it return?
-		*/
 
 		if (WIFEXITED(g_exit_status))           //if the child exited normally or was it killed by a signal
 			g_exit_status = WEXITSTATUS(g_exit_status);        //takes only the exit status from the encoded version

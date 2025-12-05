@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 16:09:58 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/04 23:35:48 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -88,8 +88,6 @@ t_cmd *parse_tokens(t_token *tokens, t_env *env)
     while (tokens)
     {
         cmd = parse_command(&tokens, env);
-        /*if (tokens && tokens->type == T_PIPE)
-            ; // pipe handled in parse_command*/
         if (!cmd)
         {
             free_cmd_list(&cmd_list);
@@ -159,7 +157,13 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	int		append;
 	int		type;
 	int		fd;
+	int		i;
 
+	if (!*tok)
+    {
+        fprintf(stderr, "minishell: syntax error near redirection\n");
+        return -1;
+    }
 	append = ((*tok)->type == T_APPEND);
 	type = (*tok)->type;
 	*tok = (*tok)->next;
@@ -167,17 +171,24 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	//handle heredoc
 	if (type == T_HEREDOC)
 	{
-		cmd->has_heredoc = 1;
-		if ((*tok)->quoted == 1 || (*tok)->quoted == 2)
-    		cmd->heredoc_expand = 0;
-		else
-    		cmd->heredoc_expand = 1;
-
-		cmd->heredoc_delim = ft_strdup((*tok)->value);
-		if (!cmd->heredoc_delim)
+		i = cmd->heredoc_count;
+		//debug
+		printf("i is: %d\n", i);
+		if (!*tok || (*tok)->type != T_WORD)
+		{
+			fprintf(stderr, "minishell: syntax error near redirection\n");
 			return (-1);
-		*tok = (*tok)->next;
-        return 0;
+		}
+		cmd->heredoc_delims[i] = ft_strdup((*tok)->value);
+    	if (!cmd->heredoc_delims[i])
+        	return (-1);
+    	if ((*tok)->quoted == 1 || (*tok)->quoted == 2)
+        	cmd->heredoc_expands[i] = 0;
+    	else
+        	cmd->heredoc_expands[i] = 1;
+    	cmd->heredoc_count++;
+    	*tok = (*tok)->next;
+   		return (0);	
 	}
 	if (!*tok || (*tok)->type != T_WORD)
 	{
@@ -228,9 +239,12 @@ int count_args(t_token *tok)
 t_cmd *parse_command(t_token **cur, t_env *env)
 {
     t_cmd  *cmd;
-    int     argc = 0;
+    int     argc;
     t_token *tok;
     int   arg_count;
+	int		i;
+	int		j;
+	int		total_heredocs;
 
     cmd = calloc(1, sizeof(t_cmd));
     if (!cmd)
@@ -238,16 +252,49 @@ t_cmd *parse_command(t_token **cur, t_env *env)
 
     arg_count = count_args(*cur);
 	//debug
-	//printf("arg_count: %d\n", arg_count);
+	printf("arg_count: %d\n", arg_count);      //okay
+	argc = 0;
     cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
         return (free(cmd), NULL);
 	else
 	{
-		for (int i = 0; i <= arg_count; i++)
-    	cmd->argv[i] = NULL;
+		i = 0;
+		while (i < arg_count)
+		{
+			cmd->argv[i] = NULL;
+			i++;
+		}
 	}
+	total_heredocs = count_heredocs(*cur);
+	//debug
+	printf("total_heredoc_count: %d\n", total_heredocs);   //okay
+	if (total_heredocs > 0)
+	{
+    	cmd->heredoc_delims   = malloc(sizeof(char *) * total_heredocs);
+    	cmd->heredoc_fds      = malloc(sizeof(int) * total_heredocs);
+    	cmd->heredoc_expands = malloc(sizeof(int) * total_heredocs);
 
+    	if (!cmd->heredoc_delims || !cmd->heredoc_fds || !cmd->heredoc_expands)
+		{
+        	return (free_cmd(cmd), NULL);
+		}
+		j = 0;
+		while (j < total_heredocs)
+		{
+    		cmd->heredoc_delims[j] = NULL;
+        	cmd->heredoc_fds[j] = -1;
+        	cmd->heredoc_expands[j] = 1;
+			j++;
+		}
+		//debug
+		for(int k = 0; k < total_heredocs; k++)
+		{
+			printf("delim number %d: %s\n",k, cmd->heredoc_delims[k]);
+			printf("fd number %d: %d\n", k, cmd->heredoc_fds[k]);          //->initialization is okay
+			printf("fd expand number %d: %d\n", k, cmd->heredoc_expands[k]);
+		}
+	}
     tok = *cur;
     while (tok && tok->type != T_PIPE)
     {
@@ -269,7 +316,6 @@ t_cmd *parse_command(t_token **cur, t_env *env)
         tok = tok->next;
     }
     cmd->argv[argc] = NULL;
-
     /* advance the caller's token pointer to where parsing stopped */
     *cur = tok;
     return (cmd);
@@ -278,14 +324,19 @@ t_cmd *parse_command(t_token **cur, t_env *env)
 
 void free_cmd(t_cmd *cmd)
 {
+	int i;
+	int	j;
+
     if (!cmd)
         return;
     if (cmd->argv)
     {
-        for (int i = 0; cmd->argv[i]; i++)
+		i = 0;
+       while (cmd->argv[i])
 		{
 			if (cmd->argv[i])
             	free(cmd->argv[i]);
+			i++;
 		}
         free(cmd->argv);
     }
@@ -293,6 +344,19 @@ void free_cmd(t_cmd *cmd)
     	free(cmd->infile);
 	if (cmd->outfile)
     	free(cmd->outfile);
+	if (cmd->heredoc_delims)
+	{
+		j = 0;
+		while (j < cmd->heredoc_count)
+		{
+			free(cmd->heredoc_delims[j]);
+			j++;
+		}
+		if (cmd->heredoc_fds)
+    		free(cmd->heredoc_fds);
+		if (cmd->heredoc_expands)
+    		free(cmd->heredoc_expands);
+	}
     free(cmd);
 }
 
