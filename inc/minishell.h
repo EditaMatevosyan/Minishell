@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/04 16:40:50 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/06 14:21:55 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,6 +23,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <sys/stat.h> 
 
 typedef enum e_token_type
 {
@@ -163,5 +164,6 @@ void	close_fds(int	**fds, int n);
 char	**env_list_to_array(t_env *env);
 int		process_all_heredocs(t_cmd *cmd_list, t_minishell *ms);
 int	count_heredocs(t_token *tok);
+void free_env_array(char **envp);
 
 #endif

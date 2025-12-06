@@ -82,16 +82,12 @@ int process_all_heredocs(t_cmd *cmd_list, t_minishell *ms)
 {
     t_cmd *cur = cmd_list;
 
-	//debug
-	printf("heredoc_count:%d\n", cur->heredoc_count);
     while (cur)
     {
         if (cur->heredoc_count > 0)
         {
             if (process_heredoc(cur, ms->env) == -1)
 			{
-				//debug
-				printf("process_heredoc() fails\n");
                 return (-1);
 			}
         }
@@ -159,10 +155,8 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
 	i = 0;
 	while (i < n - 1)
 	{
-		free(fds[i]);
 		i++;
 	}
-	free(fds);
 	cur = cmd_list;
     while (cur)
     {
@@ -170,12 +164,8 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
 		while (j < cur->heredoc_count)
 		{
 			close(cur->heredoc_fds[j]);
-        	free(cur->heredoc_delims[j]); 
 			j++;
 		}
-        free(cur->heredoc_fds);
-    	free(cur->heredoc_delims);
-    	free(cur->heredoc_expands); 
         cur = cur->next;
     }
     while (n > 0)

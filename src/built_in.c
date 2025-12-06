@@ -1,16 +1,41 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   built_in.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 17:02:28 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 11:48:15 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/05 13:09:10 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "minishell.h"
+
+#include "minishell.h"
+
+int is_builtin(t_cmd *cmd)
+{
+    if (!cmd || !cmd->argv || !cmd->argv[0])
+        return 0;
+
+    if (!ft_strcmp(cmd->argv[0], "echo"))
+        return 1;
+    if (!ft_strcmp(cmd->argv[0], "cd"))
+        return 1;
+    if (!ft_strcmp(cmd->argv[0], "pwd"))
+        return 1;
+    if (!ft_strcmp(cmd->argv[0], "export"))
+        return 1;
+    if (!ft_strcmp(cmd->argv[0], "unset"))
+        return 1;
+    if (!ft_strcmp(cmd->argv[0], "env"))
+        return 1;
+    if (!ft_strcmp(cmd->argv[0], "exit"))
+        return 1;
+
+    return 0; // Not a built-in
+}
 
 int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell)
 {

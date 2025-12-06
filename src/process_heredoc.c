@@ -7,15 +7,11 @@ int process_heredoc(t_cmd *cmd, t_env *env)
     char    *expanded;
     int     i;
 
-	//debug
-	printf("entering process_heredoc");
     i = 0;
     while (i < cmd->heredoc_count)
     {
         if (pipe(fd) == -1)
         {
-			//debug
-			printf("i: %d\n", i);
             perror("pipe");
             while (--i >= 0)
                 if (cmd->heredoc_fds[i] != -1)
@@ -24,8 +20,6 @@ int process_heredoc(t_cmd *cmd, t_env *env)
         }
         while (1)
         {
-			//debug
-			printf("entering while(1)\n");
             line = readline("> ");
             if (!line)
                 break;

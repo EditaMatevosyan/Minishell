@@ -53,8 +53,6 @@ void	change_stdin(t_cmd *cmd)
 	fd_in = open_infile(cmd);
 	if (fd_in < 0)
 	{
-		//-----------DEBUG------------
-		printf("entering fd < 0 condition");
 		return ;
 	}
 	if (dup2(fd_in, STDIN_FILENO) < 0)                //"Make STDIN_FILENO (standard input) point to the same file as fd_in."

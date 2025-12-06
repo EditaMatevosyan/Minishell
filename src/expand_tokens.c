@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/04 23:35:48 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/06 13:37:01 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,6 +16,8 @@ char *expand_str(char *str, t_env *env)
 {
     int i = 0;
     char *res = ft_strdup("");
+    char *tmp;
+
     if (!res)
         return (NULL);
 
@@ -26,41 +28,56 @@ char *expand_str(char *str, t_env *env)
             i++;
             if (!str[i] || (str[i] != '?' && !ft_isalnum(str[i]) && str[i] != '_'))
             {
-                char tmp[2];
-                tmp[0] = '$';
-                tmp[1] = '\0';
-                res = str_join_free(res, ft_strdup(tmp));
+                char lit[2] = {'$', '\0'};
+                tmp = str_join_free(res, ft_strdup(lit));
+                if (!tmp)
+                    return (free(res), NULL);
+                res = tmp;
                 continue;
             }
-            if (str[i] == '?') 
+
+            if (str[i] == '?')
             {
-                res = str_join_free(res, ft_itoa(g_exit_status));
+                tmp = str_join_free(res, ft_itoa(g_exit_status));
+                if (!tmp)
+                    return (free(res), NULL);
+                res = tmp;
                 i++;
             }
-            else                
+            else
             {
                 int start = i;
                 while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
                     i++;
+
                 char *key = ft_substr(str, start, i - start);
+                if (!key)
+                    return (free(res), NULL);
+
                 char *val = get_env_value(env, key);
                 free(key);
                 if (!val)
-                    val = ft_strdup(""); 
-                res = str_join_free(res, val); 
+                    val = ft_strdup("");
+
+                tmp = str_join_free(res, val);
+                if (!tmp)
+                    return (free(res), NULL);
+                res = tmp;
             }
         }
         else
         {
-            char tmp[2];
-            tmp[0] = str[i];
-            tmp[1] = '\0';
-            res = str_join_free(res, ft_strdup(tmp));
+            char lit[2] = {str[i], '\0'};
+            tmp = str_join_free(res, ft_strdup(lit));
+            if (!tmp)
+                return (free(res), NULL);
+            res = tmp;
             i++;
         }
     }
     return (res);
 }
+
 
 int expand_tokens(t_token *tok, t_env *env)
 {
@@ -172,8 +189,6 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	if (type == T_HEREDOC)
 	{
 		i = cmd->heredoc_count;
-		//debug
-		printf("i is: %d\n", i);
 		if (!*tok || (*tok)->type != T_WORD)
 		{
 			fprintf(stderr, "minishell: syntax error near redirection\n");
@@ -217,7 +232,9 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	else if (type == T_REDIR_OUT || type == T_APPEND)
 	{
 		free(cmd->outfile);
-		cmd->outfile = value;          
+		cmd->outfile = value;  
+		//debug
+		printf("outfile: %s\n", cmd->outfile);        
 		cmd->append = append;
 	}
 	*tok = (*tok)->next;
@@ -251,8 +268,6 @@ t_cmd *parse_command(t_token **cur, t_env *env)
         return (NULL);
 
     arg_count = count_args(*cur);
-	//debug
-	printf("arg_count: %d\n", arg_count);      //okay
 	argc = 0;
     cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
@@ -268,7 +283,7 @@ t_cmd *parse_command(t_token **cur, t_env *env)
 	}
 	total_heredocs = count_heredocs(*cur);
 	//debug
-	printf("total_heredoc_count: %d\n", total_heredocs);   //okay
+	//printf("total_heredocs: %d\n", total_heredocs);
 	if (total_heredocs > 0)
 	{
     	cmd->heredoc_delims   = malloc(sizeof(char *) * total_heredocs);
@@ -286,13 +301,6 @@ t_cmd *parse_command(t_token **cur, t_env *env)
         	cmd->heredoc_fds[j] = -1;
         	cmd->heredoc_expands[j] = 1;
 			j++;
-		}
-		//debug
-		for(int k = 0; k < total_heredocs; k++)
-		{
-			printf("delim number %d: %s\n",k, cmd->heredoc_delims[k]);
-			printf("fd number %d: %d\n", k, cmd->heredoc_fds[k]);          //->initialization is okay
-			printf("fd expand number %d: %d\n", k, cmd->heredoc_expands[k]);
 		}
 	}
     tok = *cur;
@@ -347,15 +355,20 @@ void free_cmd(t_cmd *cmd)
 	if (cmd->heredoc_delims)
 	{
 		j = 0;
+		//debug
+		printf("heredoc_count in free_cmd: %d\n", cmd->heredoc_count);
 		while (j < cmd->heredoc_count)
 		{
-			free(cmd->heredoc_delims[j]);
+			if (cmd->heredoc_delims[j])
+				free(cmd->heredoc_delims[j]);
 			j++;
 		}
 		if (cmd->heredoc_fds)
     		free(cmd->heredoc_fds);
 		if (cmd->heredoc_expands)
     		free(cmd->heredoc_expands);
+		if (cmd->heredoc_delims)
+			free(cmd->heredoc_delims);
 	}
     free(cmd);
 }

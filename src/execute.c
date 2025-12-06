@@ -1,26 +1,6 @@
 #include "minishell.h"
 
-extern int g_exit_status;            //it is defined in another .c file, and i want to use it in this .c file, thats why it is written extern
-
-int is_builtin(t_cmd *cmd)
-{
-    if (!cmd->argv || !cmd->argv[0])
-	{
-        return (0);
-	}
-	
-    return (!ft_strcmp(cmd->argv[0], "echo")          //returns 0 if built-in, 1 if no
-        || !ft_strcmp(cmd->argv[0], "cd")
-        || !ft_strcmp(cmd->argv[0], "pwd")
-        || !ft_strcmp(cmd->argv[0], "export")
-        || !ft_strcmp(cmd->argv[0], "unset")
-        || !ft_strcmp(cmd->argv[0], "env")
-        || !ft_strcmp(cmd->argv[0], "exit"));
-}
-
-// 
-
-
+extern int g_exit_status;
 
 char **env_list_to_array(t_env *env)
 {
@@ -49,77 +29,169 @@ char **env_list_to_array(t_env *env)
     return arr;
 }
 
-
-//------------TEMP-----------
-void	execute_command(t_cmd *cmd, t_minishell *shell)
+void free_env_array(char **envp)
 {
-	pid_t	pid;
-	char	*path;
-	int status;
-	int	last_heredoc;
+    int i = 0;
+    if (!envp)
+        return;
+    while (envp[i])
+        free(envp[i++]);
+    free(envp);
+}
 
-	if (!cmd->argv || !cmd->argv[0])
-    	return ;
-	if (cmd->heredoc_count > 0)
+
+void execute_command(t_cmd *cmd, t_minishell *shell)
+{
+    pid_t pid;
+    char *path;
+    int last_heredoc;
+    int status;
+	struct stat st;
+
+    if (!cmd || !cmd->argv || !cmd->argv[0])
+        return;
+
+    if (cmd->heredoc_count > 0)
     {
         if (process_heredoc(cmd, shell->env) == -1)
             return;
     }
-	if (is_builtin(cmd))
-	{
-		status = exec_builtin(cmd, &shell->env, shell);
-		shell->exit_status = (unsigned char)status;
-		return ;
-	}
-	char **envp_array = env_list_to_array(shell->env);
-	if (!envp_array)
-	{
-		perror("malloc");
-		shell->exit_status = 1;
-		exit(1);
-	}
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("fork");
-		shell->exit_status = 1;
-		return;
-	}
-	if (pid == 0)
-	{
-		change_stdin(cmd);
-		change_stdout(cmd);
-		//debug
-		printf("heredoc count: %d\n",cmd->heredoc_count);
-		if (cmd->heredoc_count > 0)
-		{
-    		last_heredoc = cmd->heredoc_count - 1;
-    		if (cmd->heredoc_fds &&
-        	cmd->heredoc_fds[last_heredoc] != -1)
-    		{
-        		dup2(cmd->heredoc_fds[last_heredoc], STDIN_FILENO);
-        		for (int k = 0; k < cmd->heredoc_count; k++)
-    			{
-        			if (cmd->heredoc_fds[k] != -1)
-            			close(cmd->heredoc_fds[k]);
-    			}
-    		}
-		}
-		path = get_full_path(cmd, shell->env);
+    if (is_builtin(cmd))
+    {
+        // Built-ins that must run in parent, because they change the internal state of the parent shell
+        if (!ft_strcmp(cmd->argv[0], "cd") ||
+            !ft_strcmp(cmd->argv[0], "export") ||
+            !ft_strcmp(cmd->argv[0], "unset"))
+        {
+            int saved_stdin = dup(STDIN_FILENO);
+            int saved_stdout = dup(STDOUT_FILENO);
+
+            change_stdin(cmd);
+            change_stdout(cmd);
+
+            status = exec_builtin(cmd, &shell->env, shell);
+            shell->exit_status = (unsigned char)status;
+
+            // Restore FDs
+            dup2(saved_stdin, STDIN_FILENO);
+            dup2(saved_stdout, STDOUT_FILENO);
+            close(saved_stdin);
+            close(saved_stdout);
+            return;
+        }
+        else
+        {
+            // Other built-ins can fork (echo, pwd, env), because if they do not work, in the case of redirections or pipes, they change their
+			//standard input/output, so if we do this iin parent, we need then to restore the fd-s of the parent
+            pid = fork();
+            if (pid < 0)
+            {
+                perror("fork");
+                shell->exit_status = 1;
+                return;
+            }
+            if (pid == 0)
+            {
+                change_stdin(cmd);
+                change_stdout(cmd);
+                if (cmd->heredoc_count > 0)
+                {
+                    last_heredoc = cmd->heredoc_count - 1;
+                    if (cmd->heredoc_fds && cmd->heredoc_fds[last_heredoc] != -1)
+                    {
+                        dup2(cmd->heredoc_fds[last_heredoc], STDIN_FILENO);
+                        for (int k = 0; k < cmd->heredoc_count; k++)
+                        {
+                            if (cmd->heredoc_fds[k] != -1)
+                                close(cmd->heredoc_fds[k]);
+                        }
+                    }
+                }
+                status = exec_builtin(cmd, &shell->env, shell);
+                exit(status);
+            }
+            else
+            {
+                waitpid(pid, &g_exit_status, 0);
+                if (WIFEXITED(g_exit_status))
+                    g_exit_status = WEXITSTATUS(g_exit_status);
+                return;
+            }
+        }
+    }
+
+    // External commands
+    char **envp_array = env_list_to_array(shell->env);
+    if (!envp_array)
+    {
+        perror("malloc");
+        shell->exit_status = 1;
+        exit(1);
+    }
+
+    pid = fork();
+    if (pid < 0)
+    {
+        perror("fork");
+        shell->exit_status = 1;
+        return;
+    }
+
+    if (pid == 0)
+    {
+        change_stdin(cmd);
+        change_stdout(cmd);
+
+        if (cmd->heredoc_count > 0)
+        {
+            last_heredoc = cmd->heredoc_count - 1;
+            if (cmd->heredoc_fds && cmd->heredoc_fds[last_heredoc] != -1)
+            {
+                dup2(cmd->heredoc_fds[last_heredoc], STDIN_FILENO);
+                for (int k = 0; k < cmd->heredoc_count; k++)
+                {
+                    if (cmd->heredoc_fds[k] != -1)
+                        close(cmd->heredoc_fds[k]);
+                }
+            }
+        }
+
+    	path = get_full_path(cmd, shell->env);
+// Case 1: path was not found at all
 		if (!path)
 		{
-			printf("minishell: the path is not found\n");
-			exit(127);                      //means command not found, childs memory is cleaned automatically by the OS, so no need to free anything
+    		//printf("minishell: %s: command not found\n", cmd->argv[0]);
+    		free_env_array(envp_array);
+    		exit(127);
+		}
+
+		if (stat(path, &st) == -1 || !S_ISREG(st.st_mode))
+		{
+    // File does not exist or is not a regular file
+    		printf("minishell: %s: command not found\n", cmd->argv[0]);
+    		free(path);
+    		free_env_array(envp_array);
+    		exit(127);
+		}
+		else if (access(path, X_OK) != 0)
+		{
+    // File exists but is not executable
+    		printf("minishell: %s: Permission denied\n", cmd->argv[0]);
+    		free(path);
+    		free_env_array(envp_array);
+    		exit(126);
 		}
 		execve(path, cmd->argv, envp_array);
-        perror("execve");
-        exit(126);               //means command found but cannot be executed
+		perror("minishell"); // should never happen
+		free(path);
+		free_env_array(envp_array);
+		exit(126);
 	}
-	else
-	{
-		waitpid(pid, &g_exit_status, 0);          //writes the exit status of the childs termination in g_exit_status
-
-		if (WIFEXITED(g_exit_status))           //if the child exited normally or was it killed by a signal
-			g_exit_status = WEXITSTATUS(g_exit_status);        //takes only the exit status from the encoded version
-	}
+    else
+    {
+        waitpid(pid, &g_exit_status, 0);
+		free_env_array(envp_array);
+        if (WIFEXITED(g_exit_status))
+            g_exit_status = WEXITSTATUS(g_exit_status);
+    }
 }

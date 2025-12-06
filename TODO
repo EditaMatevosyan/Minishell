@@ -47,3 +47,156 @@ nayel linked list-i u array-i pahy execve-i u export-i jmnk, +pipe-eri mej
 
 
 double heredoc in one command does not work
+
+
+
+
+
+minishell> pwd
+/home/rosie/Edit
+==10923== 
+==10923== HEAP SUMMARY:
+==10923==     in use at exit: 213,747 bytes in 361 blocks
+==10923==   total heap usage: 580 allocs, 219 frees, 240,481 bytes allocated
+==10923== 
+==10923== 6 bytes in 3 blocks are definitely lost in loss record 5 of 78
+==10923==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==10923==    by 0x10A433: ft_strdup (in /home/rosie/Edit/minishell)
+==10923==    by 0x10B4F9: expand_str (in /home/rosie/Edit/minishell)
+==10923==    by 0x10B5AB: expand_tokens (in /home/rosie/Edit/minishell)
+==10923==    by 0x10963B: process_input (in /home/rosie/Edit/minishell)
+==10923==    by 0x10972F: minishell_loop (in /home/rosie/Edit/minishell)
+==10923==    by 0x109781: main (in /home/rosie/Edit/minishell)
+==10923== 
+==10923== 6 bytes in 3 blocks are definitely lost in loss record 6 of 78
+==10923==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==10923==    by 0x10A433: ft_strdup (in /home/rosie/Edit/minishell)
+==10923==    by 0x10B4F9: expand_str (in /home/rosie/Edit/minishell)
+==10923==    by 0x10B718: dup_or_expand_part (in /home/rosie/Edit/minishell)
+==10923==    by 0x10B76B: join_expanded_arg (in /home/rosie/Edit/minishell)
+==10923==    by 0x10BE1B: parse_command (in /home/rosie/Edit/minishell)
+==10923==    by 0x10B639: parse_tokens (in /home/rosie/Edit/minishell)
+==10923==    by 0x10966F: process_input (in /home/rosie/Edit/minishell)
+==10923==    by 0x10972F: minishell_loop (in /home/rosie/Edit/minishell)
+==10923==    by 0x109781: main (in /home/rosie/Edit/minishell)
+==10923== 
+==10923== LEAK SUMMARY:
+==10923==    definitely lost: 12 bytes in 6 blocks
+==10923==    indirectly lost: 0 bytes in 0 blocks
+==10923==      possibly lost: 0 bytes in 0 blocks
+==10923==    still reachable: 213,735 bytes in 355 blocks
+==10923==         suppressed: 0 bytes in 0 blocks
+==10923== Reachable blocks (those to which a pointer was found) are not shown.
+==10923== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==10923== 
+==10923== For lists of detected and suppressed errors, rerun with: -s
+==10923== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+minishell> 
+
+
+
+
+
+
+
+
+minishell> echo hello
+hello
+==11568== 
+==11568== HEAP SUMMARY:
+==11568==     in use at exit: 214,135 bytes in 435 blocks
+==11568==   total heap usage: 1,108 allocs, 673 frees, 263,367 bytes allocated
+==11568== 
+==11568== 62 bytes in 31 blocks are definitely lost in loss record 22 of 78
+==11568==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==11568==    by 0x10A433: ft_strdup (in /home/rosie/Edit/minishell)
+==11568==    by 0x10B4F9: expand_str (in /home/rosie/Edit/minishell)
+==11568==    by 0x10B5AB: expand_tokens (in /home/rosie/Edit/minishell)
+==11568==    by 0x10963B: process_input (in /home/rosie/Edit/minishell)
+==11568==    by 0x10972F: minishell_loop (in /home/rosie/Edit/minishell)
+==11568==    by 0x109781: main (in /home/rosie/Edit/minishell)
+==11568== 
+==11568== 62 bytes in 31 blocks are definitely lost in loss record 23 of 78
+==11568==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==11568==    by 0x10A433: ft_strdup (in /home/rosie/Edit/minishell)
+==11568==    by 0x10B4F9: expand_str (in /home/rosie/Edit/minishell)
+==11568==    by 0x10B718: dup_or_expand_part (in /home/rosie/Edit/minishell)
+==11568==    by 0x10B76B: join_expanded_arg (in /home/rosie/Edit/minishell)
+==11568==    by 0x10BE1B: parse_command (in /home/rosie/Edit/minishell)
+==11568==    by 0x10B639: parse_tokens (in /home/rosie/Edit/minishell)
+==11568==    by 0x10966F: process_input (in /home/rosie/Edit/minishell)
+==11568==    by 0x10972F: minishell_loop (in /home/rosie/Edit/minishell)
+==11568==    by 0x109781: main (in /home/rosie/Edit/minishell)
+==11568== 
+==11568== LEAK SUMMARY:
+==11568==    definitely lost: 124 bytes in 62 blocks
+==11568==    indirectly lost: 0 bytes in 0 blocks
+==11568==      possibly lost: 0 bytes in 0 blocks
+==11568==    still reachable: 214,011 bytes in 373 blocks
+==11568==         suppressed: 0 bytes in 0 blocks
+==11568== Reachable blocks (those to which a pointer was found) are not shown.
+==11568== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==11568== 
+==11568== For lists of detected and suppressed errors, rerun with: -s
+==11568== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+minishell> 
+
+
+
+
+
+
+
+
+
+echo hello world
+hello world
+==11675== 
+==11675== HEAP SUMMARY:
+==11675==     in use at exit: 214,302 bytes in 469 blocks
+==11675==   total heap usage: 1,186 allocs, 717 frees, 263,880 bytes allocated
+==11675== 
+==11675== 90 bytes in 45 blocks are definitely lost in loss record 25 of 78
+==11675==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==11675==    by 0x10A433: ft_strdup (in /home/rosie/Edit/minishell)
+==11675==    by 0x10B4F9: expand_str (in /home/rosie/Edit/minishell)
+==11675==    by 0x10B5AB: expand_tokens (in /home/rosie/Edit/minishell)
+==11675==    by 0x10963B: process_input (in /home/rosie/Edit/minishell)
+==11675==    by 0x10972F: minishell_loop (in /home/rosie/Edit/minishell)
+==11675==    by 0x109781: main (in /home/rosie/Edit/minishell)
+==11675== 
+==11675== 90 bytes in 45 blocks are definitely lost in loss record 26 of 78
+==11675==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==11675==    by 0x10A433: ft_strdup (in /home/rosie/Edit/minishell)
+==11675==    by 0x10B4F9: expand_str (in /home/rosie/Edit/minishell)
+==11675==    by 0x10B718: dup_or_expand_part (in /home/rosie/Edit/minishell)
+==11675==    by 0x10B76B: join_expanded_arg (in /home/rosie/Edit/minishell)
+==11675==    by 0x10BE1B: parse_command (in /home/rosie/Edit/minishell)
+==11675==    by 0x10B639: parse_tokens (in /home/rosie/Edit/minishell)
+==11675==    by 0x10966F: process_input (in /home/rosie/Edit/minishell)
+==11675==    by 0x10972F: minishell_loop (in /home/rosie/Edit/minishell)
+==11675==    by 0x109781: main (in /home/rosie/Edit/minishell)
+==11675== 
+==11675== LEAK SUMMARY:
+==11675==    definitely lost: 180 bytes in 90 blocks
+==11675==    indirectly lost: 0 bytes in 0 blocks
+==11675==      possibly lost: 0 bytes in 0 blocks
+==11675==    still reachable: 214,122 bytes in 379 blocks
+==11675==         suppressed: 0 bytes in 0 blocks
+==11675== Reachable blocks (those to which a pointer was found) are not shown.
+==11675== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==11675== 
+==11675== For lists of detected and suppressed errors, rerun with: -s
+==11675== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+minishell> 
+
+
+
+
+
+
+
+
+
+
+

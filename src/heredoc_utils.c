@@ -11,7 +11,5 @@ int	count_heredocs(t_token *tok)
 			count++;
 		tok = tok->next;
 	}
-	//debug
-	printf("count: %d\n", count);
 	return (count);
 }
