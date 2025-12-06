@@ -200,3 +200,14 @@ minishell>
 
 
 
+cd ~ chi ashxati
+
+
+minishell> ~
+our output shows nothing
+
+bash's output:
+~
+bash: /home/rosie: Is a directory
+
+

@@ -33,7 +33,9 @@ SRCS_NAME = main.c \
 			exit.c \
 			process_heredoc.c \
 			pipes.c \
-			heredoc_utils.c
+			heredoc_utils.c \
+			export.c \
+			unset.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))
@@ -57,7 +59,7 @@ fclean: clean
 
 re: fclean all
 
-valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=ignore_readline.supp ./minishell
+#valgrind:
+#	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=ignore_readline.supp ./minishell
 
-.PHONY: all clean fclean re valgrind
+.PHONY: all clean fclean re #valgrind

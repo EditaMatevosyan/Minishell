@@ -6,7 +6,7 @@
 /*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:22:23 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 15:22:58 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/06 16:10:03 by rosie            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -47,11 +47,16 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (str);
 }
 
+
 char *str_join_free(char *s1, char *s2)
 {
     char *res = ft_strjoin(s1, s2);
     free(s1);
-	free(s2);
+    if (res == NULL) {
+        free(s2);
+        return (NULL);
+    }
+    free(s2);
     return (res);
 }
 

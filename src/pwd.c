@@ -23,7 +23,7 @@ void builtin_cd(t_cmd *cmd, t_minishell *shell)
 	av = cmd->argv;
 	if (!av[1] || av[2])
 	{
-		ft_putstr_fd("minishell: cd: wrong number of arguments\n", 2);
+		//ft_putstr_fd("minishell: cd: wrong number of arguments\n", 2);
 		shell->exit_status = 1;
 		return ;
 	}
