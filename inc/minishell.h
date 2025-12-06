@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 14:21:55 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/06 15:34:05 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -154,6 +154,9 @@ int	process_heredoc(t_cmd *cmd, t_env *env);
 void env_print(t_env *env, char **envp);
 void	builtin_exit(t_cmd *cmd, t_minishell *shell);
 void builtin_cd(t_cmd *cmd, t_minishell *shell);
+void	builtin_export(t_cmd *cmd, t_minishell *shell);
+void	builtin_unset(t_cmd *cmd, t_minishell *shell);
+int is_valid_identifier(char *str);
 int	count_commands(t_cmd	*cmd_list);
 int		execute_pipeline(t_cmd *cmd_list, t_minishell *ms);
 int		count_args(t_token *tok);

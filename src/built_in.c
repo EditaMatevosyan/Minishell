@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   built_in.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 17:02:28 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/05 13:09:10 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/06 15:33:14 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -68,6 +68,16 @@ int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell)
     if(!ft_strcmp(argv[0], "cd"))
     {
         builtin_cd(cmd, shell);
+        return(shell->exit_status);
+    }
+    if(!ft_strcmp(argv[0], "export"))
+    {
+        builtin_export(cmd, shell);
+        return(shell->exit_status);
+    }
+    if(!ft_strcmp(argv[0], "unset"))
+    {
+        builtin_unset(cmd, shell);
         return(shell->exit_status);
     }
     return (shell->exit_status);

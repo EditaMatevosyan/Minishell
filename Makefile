@@ -31,6 +31,8 @@ SRCS_NAME = main.c \
 			pwd.c \
 			env.c \
 			exit.c \
+			export.c \
+			unset.c \
 			process_heredoc.c \
 			pipes.c \
 			heredoc_utils.c
