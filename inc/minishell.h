@@ -111,6 +111,7 @@ char *ft_strchr(char *s, int c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 int ft_isalnum(int c);
 char	*ft_itoa(int n);
+void ft_putchar_fd(char c, int fd);
 void ft_putstr_fd(char *s, int fd);
 const char *skip_spaces(const char *str);
 int acc_digits(const char **ps, int sign, long long *acc_out);
