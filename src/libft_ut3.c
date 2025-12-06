@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   libft_ut3.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:22:23 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 16:10:03 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/06 17:09:49 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -47,6 +47,43 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (str);
 }
 
+void	*ft_memcpy(void *dst, const void *src, size_t n)
+{
+	size_t			i;
+	unsigned char	*d;
+	const unsigned char	*s;
+
+	if (!dst && !src)
+		return (NULL);
+	d = (unsigned char *)dst;
+	s = (const unsigned char *)src;
+	i = 0;
+	while (i < n)
+	{
+		d[i] = s[i];
+		i++;
+	}
+	return (dst);
+}
+
+char	*ft_strjoin2(const char *s1, const char *s2)
+{
+	size_t	len1;
+	size_t	len2;
+	char	*out;
+
+	if (!s1 || !s2)
+		return (NULL);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	out = (char *)malloc(len1 + len2 + 1);
+	if (!out)
+		return (NULL);
+	ft_memcpy(out, s1, len1);
+	ft_memcpy(out + len1, s2, len2);
+	out[len1 + len2] = '\0';
+	return (out);
+}
 
 char *str_join_free(char *s1, char *s2)
 {

@@ -29,6 +29,7 @@ SRCS_NAME = main.c \
 			built_in.c \
 			echo.c \
 			pwd.c \
+			cd.c \
 			env.c \
 			exit.c \
 			process_heredoc.c \

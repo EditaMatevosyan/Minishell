@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/30 15:45:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 10:11:06 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/06 16:59:08 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char *ft_strndup(char *s, int n)
     return (dup);
 }
 
-char *ft_strdup(char *s)
+char *ft_strdup(const char *s)
 {
     char *dup;
     int len = ft_strlen(s);

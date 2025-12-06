@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 15:34:05 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/06 17:10:02 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void add_token(t_token **list, t_token *new);
 int is_special(char c);
 char *ft_strndup(char *s, int n);
 char *str_join_free(char *s1, char *s2);
-char *ft_strdup(char *s);
+char *ft_strdup(const char *s);
 int tokenize_input(t_minishell *shell, char *input);
 int handle_quotes(t_minishell *shell, char *input, int i);
 void free_tokens(t_token **list);
@@ -104,6 +104,8 @@ size_t	ft_strlen(const char *s);
 int ft_strcmp(char *s1, char *s2);
 int ft_strncmp(char *s1, char *s2, size_t n);
 char	*ft_strjoin(char *s1, char *s2);
+char	*ft_strjoin2(const char *s1, const char *s2);
+void	*ft_memcpy(void *dst, const void *src, size_t n);
 void print_cmd_list(t_cmd *cmd);
 char *ft_strchr(char *s, int c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
@@ -154,6 +156,12 @@ int	process_heredoc(t_cmd *cmd, t_env *env);
 void env_print(t_env *env, char **envp);
 void	builtin_exit(t_cmd *cmd, t_minishell *shell);
 void builtin_cd(t_cmd *cmd, t_minishell *shell);
+int   cd_too_many_args(char **av, t_minishell *sh);
+char *cd_dup_home(t_minishell *sh);                 
+char *cd_expand_tilde(const char *arg, t_minishell *sh); 
+char *cd_resolve_path(char **av, t_minishell *sh);   
+int   cd_set_oldpwd(t_minishell *sh);                
+int   cd_update_pwd(t_minishell *sh); 
 void	builtin_export(t_cmd *cmd, t_minishell *shell);
 void	builtin_unset(t_cmd *cmd, t_minishell *shell);
 int is_valid_identifier(char *str);

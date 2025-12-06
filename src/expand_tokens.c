@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 16:21:12 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/06 17:38:35 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -81,17 +81,45 @@ char *expand_str(char *str, t_env *env)
     return (res);
 }
 
+/* returns a new malloc'd string */
+static char *tilde(const char *s, t_env *env)
+{
+    const char *home;
+    char       *res;
+
+    if (!s || s[0] != '~')
+        return (ft_strdup(s ? s : ""));
+    if (s[1] && s[1] != '/')
+        return (ft_strdup(s)); /* not handling ~user */
+    home = get_env_value(env, "HOME");
+    if (!home)
+        return (ft_strdup(s)); /* bash leaves it as "~" if HOME is unset */
+    /* join HOME + (s + 1) */
+    res = ft_strjoin2(home, s + 1); /* ft_strjoin2 creates a new string and doesn't free inputs */
+    return (res);
+}
+
 int expand_tokens(t_token *tok, t_env *env)
 {
     while (tok)
     {
         if (tok->expand == 1 && tok->value)
         {
-            char *new = expand_str(tok->value, env);
-            if (!new)
+            char *pre;
+            char *newv;
+
+            if (tok->quoted == 0)
+                pre = tilde(tok->value, env);
+            else
+                pre = ft_strdup(tok->value);
+            if (!pre)
+                return (-1);
+            newv = expand_str(pre, env);                /* your existing $VAR expander */
+            free(pre);
+            if (!newv)
                 return (-1);
             free(tok->value);
-            tok->value = new;
+            tok->value = newv;
         }
         tok = tok->next;
     }
