@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Iinc #-g3 -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -Iinc -g3
 
 HEADERS = inc/minishell.h
 
@@ -31,8 +31,6 @@ SRCS_NAME = main.c \
 			pwd.c \
 			env.c \
 			exit.c \
-			export.c \
-			unset.c \
 			process_heredoc.c \
 			pipes.c \
 			heredoc_utils.c
@@ -59,4 +57,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=ignore_readline.supp ./minishell
+
+.PHONY: all clean fclean re valgrind
