@@ -61,7 +61,8 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         // Built-ins that must run in parent, because they change the internal state of the parent shell
         if (!ft_strcmp(cmd->argv[0], "cd") ||
             !ft_strcmp(cmd->argv[0], "export") ||
-            !ft_strcmp(cmd->argv[0], "unset"))
+            !ft_strcmp(cmd->argv[0], "unset") ||
+            !ft_strcmp(cmd->argv[0], "exit"))
         {
             int saved_stdin = dup(STDIN_FILENO);
             int saved_stdout = dup(STDOUT_FILENO);
@@ -165,18 +166,31 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     		exit(127);
 		}
 
-		if (stat(path, &st) == -1 || !S_ISREG(st.st_mode))
+		if (stat(path, &st) == -1 /*|| !S_ISREG(st.st_mode)*/)
 		{
-    // File does not exist or is not a regular file
-    		printf("minishell: %s: command not found\n", cmd->argv[0]);
+			// File does not exist
+    		fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
     		free(path);
     		free_env_array(envp_array);
     		exit(127);
 		}
-		else if (access(path, X_OK) != 0)
+		if (S_ISDIR(st.st_mode))
 		{
-    // File exists but is not executable
-    		printf("minishell: %s: Permission denied\n", cmd->argv[0]);
+			fprintf(stderr, "minishell: %s: Is a directory\n", path);
+			free(path);
+			free_env_array(envp_array);
+			exit(126);
+		}
+		if (!S_ISREG(st.st_mode))
+		{
+    		fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
+    		free(path);
+    		free_env_array(envp_array);
+    		exit(127);
+		}
+		if (access(path, X_OK) != 0)
+		{
+    		fprintf(stderr, "minishell: %s: Permission denied\n", cmd->argv[0]);
     		free(path);
     		free_env_array(envp_array);
     		exit(126);

@@ -37,9 +37,9 @@ static void	ms_print_exit(void)
 static void	ms_exit_numerr(t_minishell *shell, const char *arg)
 {
 	ms_print_exit();
-	ft_putstr_fd("minishell: Exit: ", 2);
+	ft_putstr_fd("minishell: exit: ", 2);
 	ft_putstr_fd((char *)arg, 2);
-	ft_putstr_fd(": Numeric argument required\n", 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
 	cleanup_and_exit(shell, 255);
 }
 
@@ -60,7 +60,7 @@ void	builtin_exit(t_cmd *cmd, t_minishell *shell)
 		ms_exit_numerr(shell, av[1]);
 	if (av[2])
 	{
-		ft_putstr_fd("minishell: Exit: too many arguments\n", 2);
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		shell->exit_status = 1;
 		return ;
 	}
