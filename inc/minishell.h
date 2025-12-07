@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 17:10:02 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/07 13:50:05 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ int syntax_check(t_token *tok);
 
 int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell);
 void echo(t_cmd *cmd);
-void pwd(t_cmd *cmd);
+void pwd(t_cmd *cmd, t_minishell *sh);
 int	process_heredoc(t_cmd *cmd, t_env *env);
 void env_print(t_env *env, char **envp);
 void	builtin_exit(t_cmd *cmd, t_minishell *shell);

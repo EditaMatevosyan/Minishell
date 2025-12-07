@@ -1,18 +1,28 @@
 #include "minishell.h"
 
-void pwd(t_cmd *cmd)
+void pwd(t_cmd *cmd, t_minishell *sh)
 {
-    char cwd[4096];
-    (void)cmd;
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
+    char    buf[4096];
+    char    *cwd;
+
+    if (cmd->argv[1] != NULL)
     {
-        printf("%s\n", cwd);
+        ft_putstr_fd("pwd: too many arguments\n", 2);
+        sh->exit_status = 1;
+        return ;
     }
-    else
+    cwd = getcwd(buf, sizeof(buf));
+    if (!cwd)
     {
-        perror("getcwd");
+        perror("pwd");
+        sh->exit_status = 1;
+        return ;
     }
+    ft_putstr_fd(cwd, 1);
+    ft_putstr_fd("\n", 1);
+    sh->exit_status = 0;
 }
+
 static int set_oldpwd_after_success(t_minishell *sh, const char *prev_pwd)
 {
     if (prev_pwd && set_env_value(&sh->env, "OLDPWD", prev_pwd))

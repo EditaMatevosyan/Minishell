@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built_in.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 17:02:28 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 15:33:14 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/07 13:50:17 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell)
     }
     if(!ft_strcmp(argv[0], "pwd"))
     {
-        pwd(cmd);
+        pwd(cmd, shell);
         return(shell->exit_status);
     }
     if(!ft_strcmp(argv[0], "env"))
