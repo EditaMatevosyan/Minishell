@@ -58,69 +58,22 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     }
     if (is_builtin(cmd))
     {
-        // Built-ins that must run in parent, because they change the internal state of the parent shell
-        if (!ft_strcmp(cmd->argv[0], "cd") ||
-            !ft_strcmp(cmd->argv[0], "export") ||
-            !ft_strcmp(cmd->argv[0], "unset") ||
-            !ft_strcmp(cmd->argv[0], "exit"))
-        {
-            int saved_stdin = dup(STDIN_FILENO);
-            int saved_stdout = dup(STDOUT_FILENO);
+        int saved_stdin = dup(STDIN_FILENO);
+        int saved_stdout = dup(STDOUT_FILENO);
 
-            change_stdin(cmd);
-            change_stdout(cmd);
+        change_stdin(cmd);
+        change_stdout(cmd);
 
-            status = exec_builtin(cmd, &shell->env, shell);
-            shell->exit_status = (unsigned char)status;
+        status = exec_builtin(cmd, &shell->env, &shell);
+        shell->exit_status = (unsigned char)status;
 
-            // Restore FDs
-            dup2(saved_stdin, STDIN_FILENO);
-            dup2(saved_stdout, STDOUT_FILENO);
-            close(saved_stdin);
-            close(saved_stdout);
-            return;
-        }
-        else
-        {
-            // Other built-ins can fork (echo, pwd, env), because if they do not work, in the case of redirections or pipes, they change their
-			//standard input/output, so if we do this iin parent, we need then to restore the fd-s of the parent
-            pid = fork();
-            if (pid < 0)
-            {
-                perror("fork");
-                shell->exit_status = 1;
-                return;
-            }
-            if (pid == 0)
-            {
-                change_stdin(cmd);
-                change_stdout(cmd);
-                if (cmd->heredoc_count > 0)
-                {
-                    last_heredoc = cmd->heredoc_count - 1;
-                    if (cmd->heredoc_fds && cmd->heredoc_fds[last_heredoc] != -1)
-                    {
-                        dup2(cmd->heredoc_fds[last_heredoc], STDIN_FILENO);
-                        for (int k = 0; k < cmd->heredoc_count; k++)
-                        {
-                            if (cmd->heredoc_fds[k] != -1)
-                                close(cmd->heredoc_fds[k]);
-                        }
-                    }
-                }
-                status = exec_builtin(cmd, &shell->env, shell);
-                exit(status);
-            }
-            else
-            {
-                waitpid(pid, &g_exit_status, 0);
-                if (WIFEXITED(g_exit_status))
-                    g_exit_status = WEXITSTATUS(g_exit_status);
-                return;
-            }
-        }
+        // Restore FDs
+        dup2(saved_stdin, STDIN_FILENO);
+        dup2(saved_stdout, STDOUT_FILENO);
+        close(saved_stdin);
+        close(saved_stdout);
+        return;
     }
-
     // External commands
     char **envp_array = env_list_to_array(shell->env);
     if (!envp_array)

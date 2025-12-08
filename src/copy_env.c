@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   copy_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:50:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/03 10:05:38 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/08 14:56:30 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,14 @@ t_env *copy_env(char **envp)
     t_env *node;
     int i;
 
+    // //debug
+    // char **tmp = envp;
+    // while (*tmp)
+    // {
+    //     printf("original env: %s\n", *tmp);
+    //     tmp++;
+    // }
+    
     head = NULL;
     i = 0;
     while (envp[i])

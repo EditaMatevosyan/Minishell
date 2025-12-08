@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft_ut3.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:22:23 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 17:09:49 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/08 13:09:31 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,6 @@ char *str_join_free(char *s1, char *s2)
 {
     char *res = ft_strjoin(s1, s2);
     free(s1);
-    if (res == NULL) {
-        free(s2);
-        return (NULL);
-    }
     free(s2);
     return (res);
 }

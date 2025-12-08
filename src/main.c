@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 15:11:20 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/08 15:03:52 by romargar         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -24,6 +24,12 @@ t_minishell	*minishell_init(char **env)
 		return (NULL);
 	shell->tokens = NULL;
 	shell->env = copy_env(env);
+    // //debug
+    // while(shell->env)
+    // {
+    //     printf("copy env var: %s\n", shell->env->var);
+    //     shell->env = shell->env->next;
+    // }
 	if (!shell->env)
 	{
 		free(shell);
@@ -84,33 +90,43 @@ static void process_input(t_minishell *ms, char *input)
     free_tokens(&ms->tokens);
 }
 
-void minishell_loop(t_minishell *ms)
-{
-    char *input;
+// void minishell_loop(t_minishell *ms)
+// {
+//     char *input;
 
-    while (1)
-    {
-        input = read_input();
-        if (!input)
-            break;
-        process_input(ms, input);
-        free(input);
-    }
-}
+//     while (1)
+//     {
+//         input = read_input();
+//         if (!input)
+//             break;
+//         process_input(ms, input);
+//         free(input);
+//     }
+//}
 
 
 int main(int argc, char **argv, char **env)
 {
     t_minishell	*shell;
+    char        *input;
 
 	(void)argv;
 	if (argc != 1)
 		return (1);
 	
-	shell = minishell_init(env);
-	minishell_loop(shell);
-	free_tokens(&shell->tokens);
-	free_env(shell->env);
-    free(shell);
+    while (1)
+    {
+        shell = minishell_init(env);
+        input = read_input();
+        if (!input)
+            break;
+        process_input(shell, input);
+        free(input);
+        free_tokens(&shell->tokens);
+	    free_env(shell->env);
+        free(shell);
+    }
+	//minishell_loop(shell);
+
 	return (0);
 }

@@ -24,13 +24,15 @@ static int set_oldpwd_after_success(t_minishell *sh, const char *prev_pwd)
     return (0);
 }
 
-void    builtin_cd(t_cmd *cmd, t_minishell *sh)
+void    builtin_cd(t_cmd *cmd, t_minishell **shell)
 {
     char        **av = cmd->argv;
-    const char  *prev = get_env_value(sh->env, "PWD");
+    const char  *prev = NULL;
     char        *prev_dup = prev ? ft_strdup(prev) : NULL;
     char        *path;
+    t_minishell *sh = *shell;
 
+    prev = get_env_value(sh->env, "PWD");
     if (cd_too_many_args(av, sh))
         return ;
     if (av[1] && ft_strcmp(av[1], "-") == 0)

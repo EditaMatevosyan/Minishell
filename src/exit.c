@@ -43,10 +43,11 @@ static void	ms_exit_numerr(t_minishell *shell, const char *arg)
 	cleanup_and_exit(shell, 255);
 }
 
-void	builtin_exit(t_cmd *cmd, t_minishell *shell)
+void	builtin_exit(t_cmd *cmd, t_minishell **sh)
 {
 	char		**av;
 	long long	val;
+	t_minishell *shell = *sh;
 
 	av = cmd->argv;
 	if (!av || !av[0])
