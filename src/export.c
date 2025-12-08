@@ -182,15 +182,13 @@ void export_print(t_env *env)
     free(arr);
 }
 
-void    builtin_export(t_cmd *cmd, t_minishell **shell)
+void    builtin_export(t_cmd *cmd, t_minishell *sh)
 {
     int   i;
     char  *arg;
     char  *eq;
     char  *key;
-    t_minishell *sh;
 
-    sh = *shell;
     if (!cmd->argv[1])
         return (export_print(sh->env), (void)(sh->exit_status = 0));
     i = 1;

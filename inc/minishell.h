@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/08 16:27:43 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/08 17:12:13 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,21 +150,21 @@ void	execute_command(t_cmd *cmd, t_minishell *shell);
 
 int syntax_check(t_token *tok);
 
-int exec_builtin(t_cmd *cmd, t_env **env, t_minishell **shell);
+int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell);
 void echo(t_cmd *cmd);
 void pwd(t_cmd *cmd);
 int	process_heredoc(t_cmd *cmd, t_env *env);
 void env_print(t_env *env, char **envp);
-void	builtin_exit(t_cmd *cmd, t_minishell **sh);
-void    builtin_cd(t_cmd *cmd, t_minishell **shell);
+void	builtin_exit(t_cmd *cmd, t_minishell *shell);
+void builtin_cd(t_cmd *cmd, t_minishell *shell);
 int   cd_too_many_args(char **av, t_minishell *sh);
 char *cd_dup_home(t_minishell *sh);                 
 char *cd_expand_tilde(const char *arg, t_minishell *sh); 
 char *cd_resolve_path(char **av, t_minishell *sh);   
 int   cd_set_oldpwd(t_minishell *sh);                
 int   cd_update_pwd(t_minishell *sh); 
-void    builtin_export(t_cmd *cmd, t_minishell **shell);
-void	builtin_unset(t_cmd *cmd, t_minishell **sh);
+void	builtin_export(t_cmd *cmd, t_minishell *shell);
+void	builtin_unset(t_cmd *cmd, t_minishell *shell);
 int is_valid_identifier(char *str);
 int	count_commands(t_cmd	*cmd_list);
 int		execute_pipeline(t_cmd *cmd_list, t_minishell *ms);

@@ -6,9 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 17:02:28 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/08 16:19:45 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/08 17:11:59 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "minishell.h"
 
 #include "minishell.h"
 
@@ -35,7 +37,7 @@ int is_builtin(t_cmd *cmd)
     return 0; // Not a built-in
 }
 
-int exec_builtin(t_cmd *cmd, t_env **env, t_minishell **shell)
+int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell)
 {
     // (void)env;
     char **argv;
@@ -46,37 +48,37 @@ int exec_builtin(t_cmd *cmd, t_env **env, t_minishell **shell)
     if (!ft_strcmp(argv[0], "echo"))
     {
         echo(cmd);
-        return((*shell)->exit_status);
+        return(shell->exit_status);
     }
     if(!ft_strcmp(argv[0], "pwd"))
     {
         pwd(cmd);
-        return((*shell)->exit_status);
+        return(shell->exit_status);
     }
     if(!ft_strcmp(argv[0], "env"))
     {
         env_print(*env, argv);
-        return((*shell)->exit_status);
+        return(shell->exit_status);
     }
     if(!ft_strcmp(argv[0], "exit"))
     {
         builtin_exit(cmd, shell);
-        return((*shell)->exit_status);
+        return(shell->exit_status);
     }
     if(!ft_strcmp(argv[0], "cd"))
     {
         builtin_cd(cmd, shell);
-        return((*shell)->exit_status);
+        return(shell->exit_status);
     }
     if(!ft_strcmp(argv[0], "export"))
     {
         builtin_export(cmd, shell);
-        return((*shell)->exit_status);
+        return(shell->exit_status);
     }
     if(!ft_strcmp(argv[0], "unset"))
     {
         builtin_unset(cmd, shell);
-        return((*shell)->exit_status);
+        return(shell->exit_status);
     }
-    return ((*shell)->exit_status);
+    return (shell->exit_status);
 }
