@@ -51,6 +51,37 @@ int	set_env_value(t_env **env, const char *key, const char *val)
 	return (0);
 }
 
+int	append_env_value(t_env **env, const char *key, const char *suffix)
+{
+	t_env	*cur;
+	char	*joined;
+	char	*base;
+
+	if (!env || !key || !suffix)
+		return (1);
+	cur = *env;
+	while (cur)
+	{
+		if (ft_strcmp(cur->var, (char *)key) == 0)
+		{
+			base = cur->value ? cur->value : "";
+			joined = ft_strjoin(base, (char *)suffix);
+			if (!joined)
+				return (1);
+			if (cur->value)
+				free(cur->value);
+			cur->value = joined;
+			return (0);
+		}
+		cur = cur->next;
+	}
+	cur = env_new((char *)key, (char *)suffix);
+	if (!cur)
+		return (1);
+	env_add_back(env, cur);
+	return (0);
+}
+
 t_env *env_new(char *var, char *value)
 {
     t_env *node = malloc(sizeof(t_env));

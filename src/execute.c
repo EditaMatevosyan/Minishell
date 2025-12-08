@@ -154,7 +154,7 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
 // Case 1: path was not found at all
 		if (!path)
 		{
-    		//printf("minishell: %s: command not found\n", cmd->argv[0]);
+    		printf("minishell: %s: command not found\n", cmd->argv[0]);
     		free_env_array(envp_array);
     		exit(127);
 		}
@@ -169,10 +169,17 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
 		}
 		if (S_ISDIR(st.st_mode))
 		{
-			fprintf(stderr, "minishell: %s: Is a directory\n", path);
+			if (ft_strchr(cmd->argv[0], '/'))
+			{
+				fprintf(stderr, "minishell: %s: Is a directory\n", path);
+				free(path);
+				free_env_array(envp_array);
+				exit(126);
+			}
+			fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
 			free(path);
 			free_env_array(envp_array);
-			exit(126);
+			exit(127);
 		}
 		if (!S_ISREG(st.st_mode))
 		{

@@ -188,6 +188,7 @@ void    builtin_export(t_cmd *cmd, t_minishell *sh)
     char  *arg;
     char  *eq;
     char  *key;
+    int    append;
 
     if (!cmd->argv[1])
         return (export_print(sh->env), (void)(sh->exit_status = 0));
@@ -196,6 +197,7 @@ void    builtin_export(t_cmd *cmd, t_minishell *sh)
     {
         arg = cmd->argv[i];
         eq = ft_strchr(arg, '=');
+        append = 0;
 
         if (!eq) 
         {
@@ -206,13 +208,24 @@ void    builtin_export(t_cmd *cmd, t_minishell *sh)
         }
         else 
         {
-            key = ft_substr(arg, 0, eq - arg);
+            if (eq > arg && *(eq - 1) == '+')
+            {
+                append = 1;
+                key = ft_substr(arg, 0, eq - arg - 1);
+            }
+            else
+                key = ft_substr(arg, 0, eq - arg);
             if (!key)
                 return ((void)(sh->exit_status = 1));
             if (!is_valid_identifier(key))
                 export_ident_error(arg, sh);
             else
-                set_env_value(&sh->env, key, eq + 1);
+            {
+                if (append)
+                    append_env_value(&sh->env, key, eq + 1);
+                else
+                    set_env_value(&sh->env, key, eq + 1);
+            }
             free(key);
         }
         i++;

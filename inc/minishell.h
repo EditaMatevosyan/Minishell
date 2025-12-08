@@ -120,6 +120,7 @@ void cleanup_and_exit(t_minishell *shell, int status);
 
 char *get_env_value(t_env *env, char *key);
 int	set_env_value(t_env **env, const char *key, const char *val);
+int	append_env_value(t_env **env, const char *key, const char *suffix);
 t_env *env_new(char *var, char *value);
 void env_add_back(t_env **env, t_env *new);
 t_env *env_init(char **envp);
