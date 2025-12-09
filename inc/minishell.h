@@ -87,12 +87,12 @@ int is_special(char c);
 char *ft_strndup(char *s, int n);
 char *str_join_free(char *s1, char *s2);
 char *ft_strdup(const char *s);
-int tokenize_input(t_minishell *shell, char *input);
+int tokenize_input(t_minishell *shell, char **input);
 int handle_quotes(t_minishell *shell, char *input, int i);
 void free_tokens(t_token **list);
 
 char	*extract_operator(char *input, int *i);
-char	*extract_quoted(char *input, int *i, int *expand, int *quoted);
+char	*extract_quoted(char **input, int *i, int *expand, int *quoted);
 char	*extract_word(char *input, int *i);
 
 int is_space(char c);

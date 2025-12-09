@@ -47,14 +47,14 @@ static char *read_input(void)
 	return (input);
 }
 
-static void process_input(t_minishell *ms, char *input)
+static void process_input(t_minishell *ms, char **input)
 {
     int rc;
     t_cmd *cmds;
 
-    if (!*input)
+    if (!input || !*input)
         return;
-    add_history(input);
+    add_history(*input);
     rc = tokenize_input(ms, input);
     if (rc == -1)
 	{
@@ -120,7 +120,8 @@ int main(int argc, char **argv, char **env)
         if (!input)
             break;
         shell->input = input;
-        process_input(shell, input);
+        process_input(shell, &input);
+        shell->input = input;
         free(shell->input);
         shell->input = NULL;
         free_tokens(&shell->tokens);

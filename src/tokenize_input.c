@@ -30,11 +30,10 @@ static int handle_operator_token(t_minishell *shell, char *input, int *i)
     return 0;
 }
 
-static int handle_quote_token(t_minishell *shell, char *input, int *i)
+static int handle_quote_token(t_minishell *shell, char **input, int *i)
 {
     char *token;
     int expand, quoted = 0;
-    (void)input;
     
     token = extract_quoted(input, i, &expand, &quoted);
     if (!token)
@@ -66,39 +65,42 @@ static void set_glued_flag_for_last(t_token *head, int glued)
     head->glued = glued;
 }
 
-int tokenize_input(t_minishell *shell, char *input)
+int tokenize_input(t_minishell *shell, char **input_ptr)
 {
     int i = 0;
     int had_space = 1; 
 
-    if (!shell || !input)
+    if (!shell || !input_ptr || !*input_ptr)
 		return (-1);
     free_tokens(&shell->tokens);
 
-    while (input[i])
+    while ((*input_ptr)[i])
     {
         had_space = 0;
-        while (is_space(input[i])) { i++; had_space = 1; }
-        if (!input[i])
+        while (is_space((*input_ptr)[i])) { i++; had_space = 1; }
+        if (!(*input_ptr)[i])
 			break;
-        if (is_operator(input[i])) {
-            if (handle_operator_token(shell, input, &i) == -1)
+        if (is_operator((*input_ptr)[i])) {
+            if (handle_operator_token(shell, *input_ptr, &i) == -1)
 				return (-1);
             set_glued_flag_for_last(shell->tokens, !had_space);
             continue;
         }
-        if (is_quote(input[i])) {
-            if (handle_quote_token(shell, input, &i) == -1)
+        if (is_quote((*input_ptr)[i])) {
+            if (handle_quote_token(shell, input_ptr, &i) == -1)
 				return (-1);
             set_glued_flag_for_last(shell->tokens, !had_space);
             continue;
         }
-        if (handle_word_token(shell, input, &i) == -1)
+        if (handle_word_token(shell, *input_ptr, &i) == -1)
 			return (-1);
         set_glued_flag_for_last(shell->tokens, !had_space);
+		// input could have been reallocated if a quote read more lines
+		// re-sync to ensure we use the latest pointer in the next loop
+		if (*input_ptr == NULL)
+			return (-1);
     }
     return 0; 
 }
-
 
 

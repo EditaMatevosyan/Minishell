@@ -43,7 +43,7 @@ char	*extract_word(char *input, int *i)
 	return (token);
 }
 
-static char *read_until_quote(char *input, char quote)
+static int	read_until_quote(char **input, char quote)
 {
 	char *line;
 	char *tmp;
@@ -56,23 +56,24 @@ static char *read_until_quote(char *input, char quote)
 			fprintf(stderr,
 				"minishell: unexpected EOF while looking for matching `%c`\n",
 				quote);
-			free(input);
-			return (NULL);
+			free(*input);
+			*input = NULL;
+			return (-1);
 		}
-		tmp = ft_strjoin(input, "\n");
-		free(input);
-		input = ft_strjoin(tmp, line);
+		tmp = ft_strjoin(*input, "\n");
+		free(*input);
+		*input = ft_strjoin(tmp, line);
 		free(tmp);
 		free(line);
 
 		int single = 0;
 		int doubleq = 0;
 		int i = 0;
-		while (input[i])
+		while ((*input)[i])
 		{
-			if (input[i] == '\'' && doubleq == 0)
+			if ((*input)[i] == '\'' && doubleq == 0)
 				single = !single;
-			else if (input[i] == '"' && single == 0)
+			else if ((*input)[i] == '"' && single == 0)
 				doubleq = !doubleq;
 			i++;
 		}
@@ -80,18 +81,19 @@ static char *read_until_quote(char *input, char quote)
 		   (quote == '"' && doubleq % 2 == 0))
 			break;
 	}
-	return (input);
+	return (0);
 }
 
-char	*extract_quoted(char *input, int *i, int *expand, int *quoted)
+char	*extract_quoted(char **input_ptr, int *i, int *expand, int *quoted)
 {
 	char	quote;
 	int		start;
 	int		len;
 	char	*token;
 
-
-	quote = input[*i];
+	if (!input_ptr || !*input_ptr)
+		return (NULL);
+	quote = (*input_ptr)[*i];
 	if (quote == '"')
 	{
     	*quoted = 1;   // double-quote
@@ -103,17 +105,16 @@ char	*extract_quoted(char *input, int *i, int *expand, int *quoted)
 		*expand = 0;  
 	}
 	start = *i + 1;
-	len = find_closing_quote(input, *i, quote);
+	len = find_closing_quote(*input_ptr, *i, quote);
 	if (len == -1)
 	{
-		input = read_until_quote(input, quote);
-		if (!input)
+		if (read_until_quote(input_ptr, quote) == -1 || !*input_ptr)
 			return (NULL);
-		len = find_closing_quote(input, *i, quote);
+		len = find_closing_quote(*input_ptr, *i, quote);
 		if (len == -1)
 			return (NULL);
 	}
-	token = ft_strndup(input + start, len);
+	token = ft_strndup((*input_ptr) + start, len);
 	*i = start + len + 1; 
 	return (token);
 }
@@ -136,4 +137,3 @@ char	*extract_operator(char *input, int *i)
 	}
 	return (token);
 }
-
