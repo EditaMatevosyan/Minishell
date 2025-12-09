@@ -119,6 +119,10 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
 		{
     		printf("minishell: %s: command not found\n", cmd->argv[0]);
     		free_env_array(envp_array);
+            free_cmd_list(&cmd);
+            free_tokens(&shell->tokens);
+            free_env(shell->env);
+            free(shell);
     		exit(127);
 		}
 
@@ -128,6 +132,10 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     		fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
     		free(path);
     		free_env_array(envp_array);
+            free_cmd_list(&cmd);
+            free_tokens(&shell->tokens);
+            free_env(shell->env);
+            free(shell);
     		exit(127);
 		}
 		if (S_ISDIR(st.st_mode))
@@ -137,11 +145,19 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
 				fprintf(stderr, "minishell: %s: Is a directory\n", path);
 				free(path);
 				free_env_array(envp_array);
+                free_cmd_list(&cmd);
+                free_tokens(&shell->tokens);
+                free_env(shell->env);
+                free(shell);
 				exit(126);
 			}
 			fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
 			free(path);
 			free_env_array(envp_array);
+            free_cmd_list(&cmd);
+            free_tokens(&shell->tokens);
+            free_env(shell->env);
+            free(shell);
 			exit(127);
 		}
 		if (!S_ISREG(st.st_mode))
@@ -149,6 +165,10 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     		fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
     		free(path);
     		free_env_array(envp_array);
+            free_cmd_list(&cmd);
+            free_tokens(&shell->tokens);
+            free_env(shell->env);
+            free(shell);
     		exit(127);
 		}
 		if (access(path, X_OK) != 0)
@@ -156,12 +176,20 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     		fprintf(stderr, "minishell: %s: Permission denied\n", cmd->argv[0]);
     		free(path);
     		free_env_array(envp_array);
+            free_cmd_list(&cmd);
+            free_tokens(&shell->tokens);
+            free_env(shell->env);
+            free(shell);
     		exit(126);
 		}
 		execve(path, cmd->argv, envp_array);
 		perror("minishell"); // should never happen
 		free(path);
 		free_env_array(envp_array);
+        free_cmd_list(&cmd);
+        free_tokens(&shell->tokens);
+        free_env(shell->env);
+        free(shell);
 		exit(126);
 	}
     else
