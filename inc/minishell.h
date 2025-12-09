@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/09 14:57:20 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/09 14:58:15 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ typedef struct s_minishell
     int fd_out;
     int fd_heredoc;
     int exit_status;
+    int *saved_stdin;
+    int *saved_stdout;
 } t_minishell;
 
 extern int g_exit_status;

@@ -72,6 +72,8 @@ void cleanup_and_exit(t_minishell *shell, int status)
     if (shell->input)
         free(shell->input);
 
+    close(*(shell->saved_stdin));
+    close(*(shell->saved_stdout));
     if (shell->fd_in != -1 && shell->fd_in != 0)
         close(shell->fd_in);
     if (shell->fd_out != -1 && shell->fd_out != 1)

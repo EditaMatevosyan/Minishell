@@ -64,6 +64,8 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         change_stdin(cmd);
         change_stdout(cmd);
 
+        shell->saved_stdin = &saved_stdin;
+        shell->saved_stdout = &saved_stdout;
         status = exec_builtin(cmd, &shell->env, shell);
         shell->exit_status = (unsigned char)status;
 

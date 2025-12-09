@@ -24,6 +24,8 @@ t_minishell	*minishell_init(char **env, char *input)
 	if (!shell)
 		return (NULL);
     shell->input = input;
+    shell->saved_stdin = NULL;
+    shell->saved_stdout = NULL;
 	shell->tokens = NULL;
 	shell->env = copy_env(env);
 	if (!shell->env)
