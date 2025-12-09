@@ -73,45 +73,6 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         close(saved_stdin);
         close(saved_stdout);
         return;
-        // else
-        // {
-        //     // Other built-ins can fork (echo, pwd, env), because if they do not work, in the case of redirections or pipes, they change their
-		// 	//standard input/output, so if we do this iin parent, we need then to restore the fd-s of the parent
-        //     pid = fork();
-        //     if (pid < 0)
-        //     {
-        //         perror("fork");
-        //         shell->exit_status = 1;
-        //         return;
-        //     }
-        //     if (pid == 0)
-        //     {
-        //         change_stdin(cmd);
-        //         change_stdout(cmd);
-        //         if (cmd->heredoc_count > 0)
-        //         {
-        //             last_heredoc = cmd->heredoc_count - 1;
-        //             if (cmd->heredoc_fds && cmd->heredoc_fds[last_heredoc] != -1)
-        //             {
-        //                 dup2(cmd->heredoc_fds[last_heredoc], STDIN_FILENO);
-        //                 for (int k = 0; k < cmd->heredoc_count; k++)
-        //                 {
-        //                     if (cmd->heredoc_fds[k] != -1)
-        //                         close(cmd->heredoc_fds[k]);
-        //                 }
-        //             }
-        //         }
-        //         status = exec_builtin(cmd, &shell->env, shell);
-        //         exit(status);
-        //     }
-        //     else
-        //     {
-        //         waitpid(pid, &g_exit_status, 0);
-        //         if (WIFEXITED(g_exit_status))
-        //             g_exit_status = WEXITSTATUS(g_exit_status);
-        //         return;
-        //     }
-        // }
     }
 
     // External commands

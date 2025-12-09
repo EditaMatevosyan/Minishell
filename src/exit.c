@@ -43,27 +43,34 @@ static void	ms_exit_numerr(t_minishell *shell, const char *arg)
 	cleanup_and_exit(shell, 255);
 }
 
-void	builtin_exit(t_cmd *cmd, t_minishell *shell)
+void    builtin_exit(t_cmd *cmd, t_minishell *shell)
 {
-	char		**av;
-	long long	val;
+    char        **av;
+    long long   val;
 
-	av = cmd->argv;
-	if (!av || !av[0])
-		return ;
-	if (!av[1])
-	{
-		ms_print_exit();
-		cleanup_and_exit(shell, (unsigned char)shell->exit_status);
-	}
-	if (!ft_atoll(av[1], &val))
-		ms_exit_numerr(shell, av[1]);
-	if (av[2])
-	{
-		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-		shell->exit_status = 1;
-		return ;
-	}
-	ms_print_exit();
-	cleanup_and_exit(shell, (unsigned char)val);
+    av = cmd->argv;
+    if (!av || !av[0])
+        return ;
+
+    if (!av[1])
+    {
+        ms_print_exit();
+        free_cmd_list(&cmd);
+        cleanup_and_exit(shell, (unsigned char)shell->exit_status);
+    }
+    if (!ft_atoll(av[1], &val))
+    {
+        // invalid numeric argument
+        ms_exit_numerr(shell, av[1]);
+    }
+    if (av[2])
+    {
+        ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+        shell->exit_status = 1;
+        free_cmd_list(&cmd);
+        return ;
+    }
+    ms_print_exit();
+    free_cmd_list(&cmd);
+    cleanup_and_exit(shell, (unsigned char)val);
 }
