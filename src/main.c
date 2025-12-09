@@ -82,36 +82,44 @@ static void process_input(t_minishell *ms, char *input)
 	else
 		execute_pipeline(cmds, ms);
     free_cmd_list(&cmds);
-    free_tokens(&ms->tokens);
+    //free_tokens(&ms->tokens);
 }
 
-void minishell_loop(t_minishell *ms)
-{
-    char *input;
+// void minishell_loop(t_minishell *ms)
+// {
+//     char *input;
 
-    while (1)
-    {
-        input = read_input();
-        if (!input)
-            break;
-        process_input(ms, input);
-        free(input);
-    }
-}
+//     while (1)
+//     {
+//         input = read_input();
+//         if (!input)
+//             break;
+//         process_input(ms, input);
+//         free(input);
+//     }
+// }
 
 
 int main(int argc, char **argv, char **env)
 {
     t_minishell	*shell;
+    char        *input;
 
 	(void)argv;
 	if (argc != 1)
 		return (1);
 	
-	shell = minishell_init(env);
-	minishell_loop(shell);
-	free_tokens(&shell->tokens);
-	free_env(shell->env);
-    free(shell);
+	while (1)
+    {
+        input = read_input();
+        if (!input)
+            break;
+        shell = minishell_init(env);
+        process_input(shell, input);
+        free(input);
+        free_tokens(&shell->tokens);
+        free_env(shell->env);
+        free(shell);
+    }
 	return (0);
 }
