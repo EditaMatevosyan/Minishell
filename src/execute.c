@@ -45,7 +45,7 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     pid_t pid;
     char *path;
     int last_heredoc;
-    int status;
+    int status = 0;
 	struct stat st;
 
     if (!cmd || !cmd->argv || !cmd->argv[0])
@@ -86,7 +86,7 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         exit(1);
     }
 
-    //setup_sigexecute_handlers();  
+    setup_sigexecute_handlers();
     pid = fork();
     if (pid < 0)
     {
@@ -194,13 +194,22 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         free_env(shell->env);
         free(shell);
 		exit(126);
-	}
+    }
     else
     {
-        waitpid(pid, &g_exit_status, 0);
-		free_env_array(envp_array);
-        if (WIFEXITED(g_exit_status))
-            g_exit_status = WEXITSTATUS(g_exit_status);
+        waitpid(pid, &status, 0);  // parent waits for child
+        free_env_array(envp_array);
+        if (WIFSIGNALED(status))
+        {
+            int sig = WTERMSIG(status);
+            if (sig == SIGQUIT)
+                printf("Quit (core dumped)\n");
+            g_exit_status = 128 + sig;
+        }
+        else if (WIFEXITED(status))
+        {
+            g_exit_status = WEXITSTATUS(status);
+        }
         setup_sigreadline_handlers();
     }
 }
