@@ -36,7 +36,8 @@ SRCS_NAME = main.c \
 			pipes.c \
 			heredoc_utils.c \
 			export.c \
-			unset.c
+			unset.c \
+			signal_helper.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))

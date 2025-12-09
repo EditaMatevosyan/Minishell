@@ -6,11 +6,9 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 17:02:28 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/08 17:11:59 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/09 16:11:53 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "minishell.h"
 
 #include "minishell.h"
 

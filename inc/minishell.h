@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/09 14:58:15 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/09 17:21:03 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,5 +181,9 @@ char	**env_list_to_array(t_env *env);
 int		process_all_heredocs(t_cmd *cmd_list, t_minishell *ms);
 int	count_heredocs(t_token *tok);
 void free_env_array(char **envp);
+void    sigint_readline_handler(int sig);
+void    sigint_handler_for_execution(int sig);
+void setup_sigreadline_handlers(void);
+void setup_sigexecute_handlers(void);
 
 #endif

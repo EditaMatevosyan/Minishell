@@ -43,6 +43,7 @@ static char *read_input(void)
 {
 	char *input;
 
+    setup_sigreadline_handlers(); 
 	input = readline("minishell> ");
 	return (input);
 }
@@ -118,7 +119,10 @@ int main(int argc, char **argv, char **env)
     {
         input = read_input();
         if (!input)
+        {
+            free(shell->input);
             break;
+        }
         shell->input = input;
         process_input(shell, &input);
         shell->input = input;

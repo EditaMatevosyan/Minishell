@@ -86,6 +86,7 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         exit(1);
     }
 
+    //setup_sigexecute_handlers();  
     pid = fork();
     if (pid < 0)
     {
@@ -96,6 +97,8 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
 
     if (pid == 0)
     {
+        signal(SIGINT, SIG_DFL);   // child reacts normally to Ctrl-C
+        signal(SIGQUIT, SIG_DFL);  /*child reacts normally to Ctrl-\*/
         change_stdin(cmd);
         change_stdout(cmd);
 
@@ -198,5 +201,6 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
 		free_env_array(envp_array);
         if (WIFEXITED(g_exit_status))
             g_exit_status = WEXITSTATUS(g_exit_status);
+        setup_sigreadline_handlers();
     }
 }

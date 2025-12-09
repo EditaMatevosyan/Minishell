@@ -60,7 +60,6 @@ void    builtin_exit(t_cmd *cmd, t_minishell *shell)
     }
     if (!ft_atoll(av[1], &val))
     {
-        // invalid numeric argument
 		free_cmd_list(&cmd);
         ms_exit_numerr(shell, av[1]);
     }
