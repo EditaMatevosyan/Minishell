@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/08 17:12:13 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/09 14:36:25 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct s_minishell
 {
     t_env *env;
     t_token *tokens;
+    char *input;
     int fd_in;
     int fd_out;
     int fd_heredoc;
@@ -77,7 +78,7 @@ typedef struct s_minishell
 
 extern int g_exit_status;
 
-t_minishell	*minishell_init(char **env);
+t_minishell	*minishell_init(char **env, char *input);
 t_token *new_token(char *value, t_token_type type, int expand, int quoted);
 void add_token(t_token **list, t_token *new);
 int is_special(char c);

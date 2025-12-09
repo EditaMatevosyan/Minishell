@@ -15,7 +15,7 @@
 
 int g_exit_status = 0;
 
-t_minishell	*minishell_init(char **env)
+t_minishell	*minishell_init(char **env, char *input)
 {
 	t_minishell	*shell;
 
@@ -23,6 +23,7 @@ t_minishell	*minishell_init(char **env)
 	shell = malloc(sizeof(t_minishell));
 	if (!shell)
 		return (NULL);
+    shell->input = input;
 	shell->tokens = NULL;
 	shell->env = copy_env(env);
 	if (!shell->env)
@@ -114,9 +115,9 @@ int main(int argc, char **argv, char **env)
         input = read_input();
         if (!input)
             break;
-        shell = minishell_init(env);
+        shell = minishell_init(env, input);
         process_input(shell, input);
-        free(input);
+        free(shell->input);
         free_tokens(&shell->tokens);
         free_env(shell->env);
         free(shell);

@@ -61,16 +61,16 @@ int ft_atoll(const char *s, long long *out)
     return (1);
 }
 
+// 
+
 void cleanup_and_exit(t_minishell *shell, int status)
 {
-    // 1. Free environment
+    if (shell->tokens)
+        free_tokens(&shell->tokens);
     if (shell->env)
         free_env(shell->env);
-
-    // if (shell->cmd)
-    //     free_cmd_list(shell->cmd);
-
-    rl_clear_history();
+    if (shell->input)
+        free(shell->input);
 
     if (shell->fd_in != -1 && shell->fd_in != 0)
         close(shell->fd_in);
@@ -78,6 +78,8 @@ void cleanup_and_exit(t_minishell *shell, int status)
         close(shell->fd_out);
     if (shell->fd_heredoc != -1)
         close(shell->fd_heredoc);
+    rl_clear_history();
+    free(shell);
 
     exit(status);
 }
