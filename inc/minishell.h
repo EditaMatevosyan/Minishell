@@ -80,7 +80,7 @@ typedef struct s_minishell
 
 extern int g_exit_status;
 
-t_minishell	*minishell_init(char **env, char *input);
+t_minishell	*minishell_init(char **env);
 t_token *new_token(char *value, t_token_type type, int expand, int quoted);
 void add_token(t_token **list, t_token *new);
 int is_special(char c);
