@@ -66,3 +66,40 @@ char	*get_full_path(t_cmd *cmd, t_env *env)
 	free_split(directories);
     return NULL;
 }
+
+char **env_list_to_array(t_env *env)
+{
+    int len = 0;
+    t_env *tmp = env;
+    while (tmp)
+    {
+        len++;
+        tmp = tmp->next;
+    }
+
+    char **arr = malloc(sizeof(char *) * (len + 1));
+    if (!arr)
+        return NULL;
+
+    tmp = env;
+    for (int i = 0; i < len; i++)
+    {
+        arr[i] = ft_strjoin(tmp->var, "=");
+        char *tmp2 = arr[i];
+        arr[i] = ft_strjoin(tmp2, tmp->value ? tmp->value : "");
+        free(tmp2);
+        tmp = tmp->next;
+    }
+    arr[len] = NULL;
+    return arr;
+}
+
+void free_env_array(char **envp)
+{
+    int i = 0;
+    if (!envp)
+        return;
+    while (envp[i])
+        free(envp[i++]);
+    free(envp);
+}

@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/09 18:01:38 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/10 10:40:59 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <sys/stat.h> 
+#include <errno.h>
 
 typedef enum e_token_type
 {
@@ -185,5 +186,10 @@ void    sigint_readline_handler(int sig);
 void    sigint_handler_for_execution(int sig);
 void setup_sigreadline_handlers(void);
 void setup_sigexecute_handlers(void);
+void	cleanup(t_cmd *cmd, t_minishell *shell);
+void setup_child_io(t_cmd *cmd);
+void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array);
+void child_process(t_cmd *cmd, t_minishell *shell, char **envp_array);
+void parent_process(pid_t pid, char **envp_array);
 
 #endif

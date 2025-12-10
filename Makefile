@@ -24,7 +24,7 @@ SRCS_NAME = main.c \
 			temp.c \
 			redirections.c \
 			execute.c \
-			execution_utils.c \
+			execution_utils1.c \
 			syntax_validation.c \
 			built_in.c \
 			echo.c \
@@ -37,7 +37,8 @@ SRCS_NAME = main.c \
 			heredoc_utils.c \
 			export.c \
 			unset.c \
-			signal_helper.c
+			signal_helper.c \
+			execution_utils2.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))

@@ -2,82 +2,51 @@
 
 extern int g_exit_status;
 
-char **env_list_to_array(t_env *env)
+int handle_heredoc(t_cmd *cmd, t_minishell *shell)
 {
-    int len = 0;
-    t_env *tmp = env;
-    while (tmp)
-    {
-        len++;
-        tmp = tmp->next;
-    }
-
-    char **arr = malloc(sizeof(char *) * (len + 1));
-    if (!arr)
-        return NULL;
-
-    tmp = env;
-    for (int i = 0; i < len; i++)
-    {
-        arr[i] = ft_strjoin(tmp->var, "=");
-        char *tmp2 = arr[i];
-        arr[i] = ft_strjoin(tmp2, tmp->value ? tmp->value : "");
-        free(tmp2);
-        tmp = tmp->next;
-    }
-    arr[len] = NULL;
-    return arr;
+    if (process_heredoc(cmd, shell->env) == -1)
+        return -1;
+    return 0;
 }
 
-void free_env_array(char **envp)
+void execute_builtin_helper(t_cmd *cmd, t_minishell *shell)
 {
-    int i = 0;
-    if (!envp)
-        return;
-    while (envp[i])
-        free(envp[i++]);
-    free(envp);
+    int saved_stdin = dup(STDIN_FILENO);
+    int saved_stdout = dup(STDOUT_FILENO);
+
+    // Apply declared redirections
+    change_stdin(cmd);
+    change_stdout(cmd);
+
+    // Apply heredoc last so it wins for stdin (same as in child)
+    if (cmd->heredoc_count > 0 && cmd->heredoc_fds)
+    {
+        int last = cmd->heredoc_count - 1;
+        if (cmd->heredoc_fds[last] != -1)
+            dup2(cmd->heredoc_fds[last], STDIN_FILENO);
+
+        int k = 0;
+        while (k < cmd->heredoc_count)
+        {
+            if (cmd->heredoc_fds[k] != -1)
+                close(cmd->heredoc_fds[k]);
+            k++;
+        }
+    }
+
+    // Do NOT keep pointers to locals; just restore below
+    int status = exec_builtin(cmd, &shell->env, shell);
+    shell->exit_status = (unsigned char)status;
+
+    dup2(saved_stdin, STDIN_FILENO);
+    dup2(saved_stdout, STDOUT_FILENO);
+    close(saved_stdin);
+    close(saved_stdout);
 }
 
 
-void execute_command(t_cmd *cmd, t_minishell *shell)
+char **prepare_env(t_minishell *shell)
 {
-    pid_t pid;
-    char *path;
-    int last_heredoc;
-    int status = 0;
-	struct stat st;
-
-    if (!cmd || !cmd->argv || !cmd->argv[0])
-        return;
-
-    if (cmd->heredoc_count > 0)
-    {
-        if (process_heredoc(cmd, shell->env) == -1)
-            return;
-    }
-    if (is_builtin(cmd))
-    {
-        int saved_stdin = dup(STDIN_FILENO);
-        int saved_stdout = dup(STDOUT_FILENO);
-
-        change_stdin(cmd);
-        change_stdout(cmd);
-
-        shell->saved_stdin = &saved_stdin;
-        shell->saved_stdout = &saved_stdout;
-        status = exec_builtin(cmd, &shell->env, shell);
-        shell->exit_status = (unsigned char)status;
-
-        // Restore FDs
-        dup2(saved_stdin, STDIN_FILENO);
-        dup2(saved_stdout, STDOUT_FILENO);
-        close(saved_stdin);
-        close(saved_stdout);
-        return;
-    }
-
-    // External commands
     char **envp_array = env_list_to_array(shell->env);
     if (!envp_array)
     {
@@ -85,7 +54,23 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         shell->exit_status = 1;
         exit(1);
     }
+    return envp_array;
+}
 
+void execute_command(t_cmd *cmd, t_minishell *shell)
+{
+    pid_t pid;
+    char **envp_array;
+	int k;
+
+    if (!cmd || !cmd->argv || !cmd->argv[0])
+        return;
+    if (cmd->heredoc_count > 0 && handle_heredoc(cmd, shell) == -1)
+        return;
+    if (is_builtin(cmd))
+        return execute_builtin_helper(cmd, shell);
+
+    envp_array = prepare_env(shell);
     setup_sigexecute_handlers();
     pid = fork();
     if (pid < 0)
@@ -94,122 +79,17 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         shell->exit_status = 1;
         return;
     }
-
     if (pid == 0)
-    {
-        signal(SIGINT, SIG_DFL);   // child reacts normally to Ctrl-C
-        signal(SIGQUIT, SIG_DFL);  /*child reacts normally to Ctrl-\*/
-        change_stdin(cmd);
-        change_stdout(cmd);
-
-        if (cmd->heredoc_count > 0)
-        {
-            last_heredoc = cmd->heredoc_count - 1;
-            if (cmd->heredoc_fds && cmd->heredoc_fds[last_heredoc] != -1)
-            {
-                dup2(cmd->heredoc_fds[last_heredoc], STDIN_FILENO);
-                for (int k = 0; k < cmd->heredoc_count; k++)
-                {
-                    if (cmd->heredoc_fds[k] != -1)
-                        close(cmd->heredoc_fds[k]);
-                }
-            }
-        }
-
-    	path = get_full_path(cmd, shell->env);
-// Case 1: path was not found at all
-		if (!path)
-		{
-    		printf("minishell: %s: command not found\n", cmd->argv[0]);
-    		free_env_array(envp_array);
-            free_cmd_list(&cmd);
-            free_tokens(&shell->tokens);
-            free_env(shell->env);
-            free(shell);
-    		exit(127);
-		}
-
-		if (stat(path, &st) == -1 /*|| !S_ISREG(st.st_mode)*/)
-		{
-			// File does not exist
-    		fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-    		free(path);
-    		free_env_array(envp_array);
-            free_cmd_list(&cmd);
-            free_tokens(&shell->tokens);
-            free_env(shell->env);
-            free(shell);
-    		exit(127);
-		}
-		if (S_ISDIR(st.st_mode))
-		{
-			if (ft_strchr(cmd->argv[0], '/'))
-			{
-				fprintf(stderr, "minishell: %s: Is a directory\n", path);
-				free(path);
-				free_env_array(envp_array);
-                free_cmd_list(&cmd);
-                free_tokens(&shell->tokens);
-                free_env(shell->env);
-                free(shell);
-				exit(126);
-			}
-			fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-			free(path);
-			free_env_array(envp_array);
-            free_cmd_list(&cmd);
-            free_tokens(&shell->tokens);
-            free_env(shell->env);
-            free(shell);
-			exit(127);
-		}
-		if (!S_ISREG(st.st_mode))
-		{
-    		fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-    		free(path);
-    		free_env_array(envp_array);
-            free_cmd_list(&cmd);
-            free_tokens(&shell->tokens);
-            free_env(shell->env);
-            free(shell);
-    		exit(127);
-		}
-		if (access(path, X_OK) != 0)
-		{
-    		fprintf(stderr, "minishell: %s: Permission denied\n", cmd->argv[0]);
-    		free(path);
-    		free_env_array(envp_array);
-            free_cmd_list(&cmd);
-            free_tokens(&shell->tokens);
-            free_env(shell->env);
-            free(shell);
-    		exit(126);
-		}
-		execve(path, cmd->argv, envp_array);
-		perror("minishell"); // should never happen
-		free(path);
-		free_env_array(envp_array);
-        free_cmd_list(&cmd);
-        free_tokens(&shell->tokens);
-        free_env(shell->env);
-        free(shell);
-		exit(126);
-    }
+        child_process(cmd, shell, envp_array);
     else
-    {
-        waitpid(pid, &status, 0);  // parent waits for child
-        free_env_array(envp_array);
-        if (WIFSIGNALED(status))
+	{
+		k = 0;
+        while (k < cmd->heredoc_count)
         {
-            int sig = WTERMSIG(status);
-            if (sig == SIGQUIT)
-                printf("Quit (core dumped)\n");
-            g_exit_status = 128 + sig;
+            if (cmd->heredoc_fds[k] != -1)
+                close(cmd->heredoc_fds[k]);
+            k++;
         }
-        else if (WIFEXITED(status))
-        {
-            g_exit_status = WEXITSTATUS(status);
-        }
-        setup_sigreadline_handlers();
-    }
+        parent_process(pid, envp_array);
+	}
 }
