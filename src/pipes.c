@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:47 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/11 12:29:03 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/11 17:45:05 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,9 +141,6 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
         if (pid == 0)
         {
             setup_fds(cur, i, n, fds);
-
-            // ------------built-in logic here-------------
-
             envp = env_list_to_array(ms->env);
             path = get_full_path(cur, ms->env);
             if (!path)
@@ -154,6 +151,7 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
                 close(STDOUT_FILENO);
                 close(STDERR_FILENO);
                 cleanup(cur, ms);
+                free_pipes(fds, n);
                 exit(127);
             }
             execve(path, cur->argv, envp);
@@ -164,6 +162,7 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
             close(STDOUT_FILENO);
             close(STDERR_FILENO);
             cleanup(cur, ms);
+            free_pipes(fds, n);
             exit(126);
         }
         cur = cur->next;

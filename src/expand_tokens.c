@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/11 17:09:08 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:07:13 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,8 +315,6 @@ t_cmd *parse_command(t_token **cur, t_env *env)
         return (NULL);
 
     arg_count = count_args(*cur);
-    // //debug
-    // printf("%d\n", arg_count);
 	argc = 0;
     cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
@@ -429,6 +427,8 @@ void free_cmd(t_cmd *cmd)
 
 void free_cmd_list(t_cmd **list)
 {
+    if (!list || !*list)
+        return;
     t_cmd *tmp;
     t_cmd *next;
 

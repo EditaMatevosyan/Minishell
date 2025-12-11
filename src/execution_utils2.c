@@ -79,7 +79,9 @@ void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
             fprintf(stderr, "minishell: %s: %s\n", path, strerror(errno));
         else
             fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-        free(path); free_env_array(envp_array); cleanup(cmd, shell);
+        free(path);
+        free_env_array(envp_array);
+        cleanup(cmd, shell);
         exit(127);
     }
     if (S_ISDIR(st.st_mode))
@@ -87,7 +89,9 @@ void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
         if (ft_strchr(cmd->argv[0], '/'))
         {
             fprintf(stderr, "minishell: %s: Is a directory\n", path);
-            free(path); free_env_array(envp_array); cleanup(cmd, shell);
+            free(path);
+            free_env_array(envp_array);
+            cleanup(cmd, shell);
             exit(126);
         }
         fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
@@ -108,6 +112,7 @@ void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
     }
 
     execve(path, cmd->argv, envp_array);
+    cleanup(cmd, shell);
     free(path); // only reached if execve fails
 }
 
