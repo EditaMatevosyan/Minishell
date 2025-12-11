@@ -63,8 +63,30 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     char **envp_array;
 	int k;
 
-    if (!cmd || !cmd->argv || !cmd->argv[0])
+    if (!cmd)
         return;
+
+        //for the case < in > out
+    if (!cmd->argv || !cmd->argv[0])
+    {
+        int fd;
+
+        if (cmd->infile)
+        {
+            fd = open_infile(cmd);
+            if (fd < 0)
+                return ;
+            close(fd);
+        }
+        if (cmd->outfile)
+        {
+            fd = open_outfile(cmd);
+            if (fd < 0)
+                return ;
+            close(fd);
+        }
+        return;
+    }
     if (cmd->heredoc_count > 0 && handle_heredoc(cmd, shell) == -1)
         return;
     if (is_builtin(cmd))
@@ -83,7 +105,7 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         child_process(cmd, shell, envp_array);
     else
 	{
-		k = 0;
+        k = 0;
         while (k < cmd->heredoc_count)
         {
             if (cmd->heredoc_fds[k] != -1)

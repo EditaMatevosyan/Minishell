@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/11 12:52:10 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/11 13:59:11 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,21 @@ static void process_input(t_minishell *ms, char **input)
 		free_tokens(&ms->tokens);
         return ;
 	}
-
     if (syntax_check(ms->tokens))
     {
         free_tokens(&ms->tokens);
-        return;
+        return ;
     }
     if (expand_tokens(ms->tokens, ms->env) == -1)
     {
         free_tokens(&ms->tokens);
-        return;
+        return ;
     }
     cmds = parse_tokens(ms->tokens, ms->env);       //this is the head of the linked list
     if (!cmds)
     {
         free_tokens(&ms->tokens);
-        return;
+        return ;
     }
 	
 	if (count_commands(cmds) == 1)
@@ -84,44 +83,19 @@ static void process_input(t_minishell *ms, char **input)
 	else
 		execute_pipeline(cmds, ms);
     free_cmd_list(&cmds);
-    //free_tokens(&ms->tokens);
 }
 
-// void minishell_loop(t_minishell *ms)
-// {
-//     char *input;
-
-//     while (1)
-//     {
-//         input = read_input();
-//         if (!input)
-//             break;
-//         process_input(ms, input);
-//         free(input);
-//     }
-// }
-
-
-int main(int argc, char **argv, char **env)
+static void run_shell(t_minishell *shell)
 {
-    t_minishell	*shell;
-    char        *input;
+    char    *input;
 
-	(void)argv;
-	if (argc != 1)
-		return (1);
-
-	close_stray_fds();
-    shell = minishell_init(env);
-    // if (!shell)
-    //     return (1);
-	while (1)
+    while (1)
     {
         input = read_input();
         if (!input)
         {
             free(shell->input);
-            break;
+            break ;
         }
         shell->input = input;
         process_input(shell, &input);
@@ -130,6 +104,18 @@ int main(int argc, char **argv, char **env)
         shell->input = NULL;
         free_tokens(&shell->tokens);
     }
+}
+
+int main(int argc, char **argv, char **env)
+{
+    t_minishell	*shell;
+
+	(void)argv;
+	if (argc != 1)
+		return (1);
+	close_stray_fds();
+    shell = minishell_init(env);
+	run_shell(shell);
     free_tokens(&shell->tokens);
     free_env(shell->env);
     free(shell);

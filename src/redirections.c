@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:13:03 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:13:04 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 15:51:51 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ int open_outfile(t_cmd *cmd)
     }
     else
     {
+		//debug
+		printf("enters the outfile ...");
         fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     }
 

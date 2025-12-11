@@ -70,7 +70,7 @@ void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
 
     if (!path)
     {
-        printf("minishell: %s: command not found\n", cmd->argv[0]);
+        fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
         free_env_array(envp_array);
         cleanup(cmd, shell);
         exit(127);

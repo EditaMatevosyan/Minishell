@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 17:38:35 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/11 15:19:30 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,10 +244,15 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 		value = expand_str((*tok)->value, env);
 	else
 		value = ft_strdup((*tok)->value);
+    //debug
+    printf("values %s\n", value);
 	if (!value)
 		return (-1);
 	if (type == T_REDIR_IN)
 	{
+        
+        //debug
+        printf("enters type == T_REDIR_IN\n");
 		fd = open(value, O_RDONLY);
 		if (fd == -1)
 		{
@@ -261,6 +266,8 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	}
 	else if (type == T_REDIR_OUT || type == T_APPEND)
 	{
+        //debug
+        printf("enters type == T_REDIR_OUT\n");
 		free(cmd->outfile);
 		cmd->outfile = value;        
 		cmd->append = append;
@@ -296,6 +303,8 @@ t_cmd *parse_command(t_token **cur, t_env *env)
         return (NULL);
 
     arg_count = count_args(*cur);
+    //debug
+    printf("%d\n", arg_count);
 	argc = 0;
     cmd->argv = malloc((arg_count + 1) * sizeof(char *));
     if (!cmd->argv)
@@ -344,7 +353,11 @@ t_cmd *parse_command(t_token **cur, t_env *env)
             || tok->type == T_APPEND || tok->type == T_HEREDOC)
         {
             if (handle_redirection(cmd, &tok, env) == -1)
+            {
+                //debug
+                printf("redirection handling is not ok");
                 return (free_cmd(cmd), NULL);
+            }
             continue;
         }
         tok = tok->next;
