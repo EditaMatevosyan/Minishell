@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/11 17:05:26 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 17:26:39 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,8 +140,8 @@ t_cmd *parse_command(t_token **cur, t_env *env);
 t_cmd *parse_tokens(t_token *tokens, t_env *env);
 int	open_infile(t_cmd *cmd);
 int	open_outfile(t_cmd *cmd);
-void	change_stdin(t_cmd *cmd);
-void	change_stdout(t_cmd *cmd);
+int	change_stdin(t_cmd *cmd);
+int	change_stdout(t_cmd *cmd);
 void	print_env(t_minishell *shell);
 int ft_strcpy_without_null_termination(char *dst, const char *src);
 char	*join_path(char *dir, char *command);

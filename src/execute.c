@@ -13,13 +13,11 @@ void execute_builtin_helper(t_cmd *cmd, t_minishell *shell)
 {
     int saved_stdin = dup(STDIN_FILENO);
     int saved_stdout = dup(STDOUT_FILENO);
+    int redir_failed = 0;
 
-    // Apply declared redirections
-    change_stdin(cmd);
-    change_stdout(cmd);
-
-    // Apply heredoc last so it wins for stdin (same as in child)
-    if (cmd->heredoc_count > 0 && cmd->heredoc_fds)
+    if (change_stdin(cmd) == -1 || change_stdout(cmd) == -1)
+        redir_failed = 1;
+    if (!redir_failed && cmd->heredoc_count > 0 && cmd->heredoc_fds)
     {
         int last = cmd->heredoc_count - 1;
         if (cmd->heredoc_fds[last] != -1)
@@ -34,7 +32,16 @@ void execute_builtin_helper(t_cmd *cmd, t_minishell *shell)
         }
     }
 
-    // Do NOT keep pointers to locals; just restore below
+    if (redir_failed)
+    {
+        dup2(saved_stdin, STDIN_FILENO);
+        dup2(saved_stdout, STDOUT_FILENO);
+        close(saved_stdin);
+        close(saved_stdout);
+        shell->exit_status = g_exit_status;
+        return;
+    }
+
     int status = exec_builtin(cmd, &shell->env, shell);
     shell->exit_status = (unsigned char)status;
 

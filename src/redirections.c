@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:13:03 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/11 17:09:43 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 17:24:16 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,44 +51,50 @@ int open_outfile(t_cmd *cmd)
     return fd;
 }
 
-void	change_stdin(t_cmd *cmd)
+int	change_stdin(t_cmd *cmd)
 {
 	int fd_in;
 
 	if (!cmd->infile)
-		return ;
+		return (0);
+
 	fd_in = open_infile(cmd);
 	if (fd_in < 0)
 	{
-		return ;
+		return (-1);
 	}
-	if (dup2(fd_in, STDIN_FILENO) < 0)                //"Make STDIN_FILENO (standard input) point to the same file as fd_in."
+	if (dup2(fd_in, STDIN_FILENO) < 0)
 	{
     	perror("dup2");
-        close(STDIN_FILENO);
-        close(STDOUT_FILENO);
-        close(STDERR_FILENO);
-    	exit(1);           //exit the child process
+        close(fd_in);
+        g_exit_status = 1;
+    	return (-1);
 	}
 	close(fd_in);
+	return (0);
 }
 
-void	change_stdout(t_cmd *cmd)
+
+
+int	change_stdout(t_cmd *cmd)
 {
-	int			fd_out;
+	int fd_out;
 
 	if (!cmd->outfile)
-		return ;
+		return (0);
+
 	fd_out = open_outfile(cmd);
 	if (fd_out < 0)
-		return ;
+	{
+		return (-1);
+	}
 	if (dup2(fd_out, STDOUT_FILENO) < 0)
 	{
     	perror("dup2");
-        close(STDIN_FILENO);
-        close(STDOUT_FILENO);
-        close(STDERR_FILENO);
-    	exit(1);
+        close(fd_out);
+        g_exit_status = 1;
+    	return (-1);
 	}
 	close(fd_out);
+	return (0);
 }

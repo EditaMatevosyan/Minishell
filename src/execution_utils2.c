@@ -39,18 +39,15 @@ void setup_child_io(t_cmd *cmd)
     signal(SIGINT, SIG_DFL);
     signal(SIGQUIT, SIG_DFL);
 
-    // Apply declared redirections first
-    change_stdin(cmd);
-    change_stdout(cmd);
+    if (change_stdin(cmd) == -1 || change_stdout(cmd) == -1)
+        exit(g_exit_status);
 
-    // Then ensure heredoc takes precedence for stdin
     if (cmd->heredoc_count > 0 && cmd->heredoc_fds)
     {
         int last = cmd->heredoc_count - 1;
         if (cmd->heredoc_fds[last] != -1)
             dup2(cmd->heredoc_fds[last], STDIN_FILENO);
 
-        // Close all heredoc fds to avoid leaks
         int k = 0;
         while (k < cmd->heredoc_count)
         {
@@ -60,6 +57,7 @@ void setup_child_io(t_cmd *cmd)
         }
     }
 }
+
 
 
 void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
