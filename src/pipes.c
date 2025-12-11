@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:47 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/11 17:45:05 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:58:13 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
                 close(STDIN_FILENO);
                 close(STDOUT_FILENO);
                 close(STDERR_FILENO);
-                cleanup(cur, ms);
+                cleanup(cmd_list, ms);
                 free_pipes(fds, n);
                 exit(127);
             }
@@ -161,7 +161,7 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
             close(STDIN_FILENO);
             close(STDOUT_FILENO);
             close(STDERR_FILENO);
-            cleanup(cur, ms);
+            cleanup(cmd_list, ms);
             free_pipes(fds, n);
             exit(126);
         }

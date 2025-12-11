@@ -80,10 +80,10 @@ static void process_input(t_minishell *ms, char **input)
         return ;
     }
 	
-	if (count_commands(cmds) == 1)
-		execute_command(cmds, ms);
-	else
-		execute_pipeline(cmds, ms);
+    if (count_commands(cmds) == 1)
+        execute_command(cmds, ms);
+    else
+        execute_pipeline(cmds, ms);
     free_cmd_list(&cmds);
 }
 

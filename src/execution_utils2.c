@@ -22,9 +22,9 @@ void	close_stray_fds(void)
 	}
 }
 
-void	cleanup(t_cmd *cmd, t_minishell *shell)
+void	cleanup(t_cmd *cmd_list, t_minishell *shell)
 {
-    free_cmd_list(&cmd);
+    free_cmd_list(&cmd_list);
     free_tokens(&shell->tokens);
     free_env(shell->env);
     free(shell);

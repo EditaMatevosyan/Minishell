@@ -188,7 +188,7 @@ void    sigint_readline_handler(int sig);
 void    sigint_handler_for_execution(int sig);
 void setup_sigreadline_handlers(void);
 void setup_sigexecute_handlers(void);
-void	cleanup(t_cmd *cmd, t_minishell *shell);
+void	cleanup(t_cmd *cmd_list, t_minishell *shell);
 void setup_child_io(t_cmd *cmd);
 void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array);
 void child_process(t_cmd *cmd, t_minishell *shell, char **envp_array);
