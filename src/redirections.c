@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:13:03 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/11 15:51:51 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 17:09:43 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,9 @@ int open_outfile(t_cmd *cmd)
         return (-1);
 
     if (cmd->append)
-    {
         fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-    }
     else
-    {
-		//debug
-		printf("enters the outfile ...");
         fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    }
-
     if (fd < 0)
     {
         perror(cmd->outfile);
@@ -82,7 +75,7 @@ void	change_stdin(t_cmd *cmd)
 
 void	change_stdout(t_cmd *cmd)
 {
-	int fd_out;
+	int			fd_out;
 
 	if (!cmd->outfile)
 		return ;
