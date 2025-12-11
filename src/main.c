@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/11 16:44:08 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:28:12 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ static void process_input(t_minishell *ms, char **input)
 	}
     if (syntax_check(ms->tokens))
     {
+        ms->exit_status = 258;
+        g_exit_status = 258;
         free_tokens(&ms->tokens);
         return ;
     }

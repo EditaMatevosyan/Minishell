@@ -14,6 +14,8 @@ void execute_builtin_helper(t_cmd *cmd, t_minishell *shell)
     int saved_stdin = dup(STDIN_FILENO);
     int saved_stdout = dup(STDOUT_FILENO);
     int redir_failed = 0;
+    shell->saved_stdin = &saved_stdin;
+    shell->saved_stdout = &saved_stdout;
 
     if (change_stdin(cmd) == -1 || change_stdout(cmd) == -1)
         redir_failed = 1;
@@ -44,11 +46,13 @@ void execute_builtin_helper(t_cmd *cmd, t_minishell *shell)
 
     int status = exec_builtin(cmd, &shell->env, shell);
     shell->exit_status = (unsigned char)status;
-
+    g_exit_status = shell->exit_status;
     dup2(saved_stdin, STDIN_FILENO);
     dup2(saved_stdout, STDOUT_FILENO);
     close(saved_stdin);
     close(saved_stdout);
+    shell->saved_stdin = NULL;
+    shell->saved_stdout = NULL;
 }
 
 

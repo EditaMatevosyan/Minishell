@@ -3,26 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:58 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:12:59 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:28:31 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void pwd(t_cmd *cmd)
+int pwd(t_cmd *cmd)
 {
     char cwd[4096];
     (void)cmd;
     if (getcwd(cwd, sizeof(cwd)) != NULL)
     {
         printf("%s\n", cwd);
+        return (0);
     }
     else
     {
         perror("getcwd");
+        return (1);
     }
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:22 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:12:23 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:25:47 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,7 +201,8 @@ void    builtin_export(t_cmd *cmd, t_minishell *sh)
     char  *eq;
     char  *key;
     int    append;
-
+    
+    sh->exit_status = 0;
     if (!cmd->argv[1])
         return (export_print(sh->env), (void)(sh->exit_status = 0));
     i = 1;

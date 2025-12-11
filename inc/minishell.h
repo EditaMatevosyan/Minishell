@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/11 17:26:39 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:16:29 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,10 +158,10 @@ void	execute_command(t_cmd *cmd, t_minishell *shell);
 int syntax_check(t_token *tok);
 
 int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell);
-void echo(t_cmd *cmd);
-void pwd(t_cmd *cmd);
+int echo(t_cmd *cmd);
+int pwd(t_cmd *cmd);
 int	process_heredoc(t_cmd *cmd, t_env *env);
-void env_print(t_env *env, char **envp);
+int env_print(t_env *env, char **envp);
 void	builtin_exit(t_cmd *cmd, t_minishell *shell);
 void builtin_cd(t_cmd *cmd, t_minishell *shell);
 int   cd_too_many_args(char **av, t_minishell *sh);

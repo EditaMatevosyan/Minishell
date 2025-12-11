@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:17 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:12:18 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:22:08 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void env_print(t_env *env, char **envp)
+int env_print(t_env *env, char **envp)
 {
 	t_env	*current;
 
@@ -20,7 +20,7 @@ void env_print(t_env *env, char **envp)
 	if (envp[1])
 	{
 		ft_putstr_fd("minishell: env: too many arguments\n", 2);
-		return;
+		return 127;
 	}
 	current = env;
 	while (current)
@@ -34,4 +34,5 @@ void env_print(t_env *env, char **envp)
 		}
 		current = current->next;
 	}
+	return 0;
 }

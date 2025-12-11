@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 15:56:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/09 14:17:49 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:21:57 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ static int n_flag(char *str)
     return (str[i] == '\0');
 }
 
-void echo(t_cmd *cmd)
+int echo(t_cmd *cmd)
 {
     int i = 1;
     int newline = 1;
 
     if (!cmd->argv)
-        return;
+        return 0;
     while (cmd->argv[i] && n_flag(cmd->argv[i]))
     {
         newline = 0;
@@ -44,4 +44,5 @@ void echo(t_cmd *cmd)
     }
     if (newline)
         ft_putstr_fd("\n", 1);
+    return 0;
 }

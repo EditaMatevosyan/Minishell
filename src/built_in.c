@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built_in.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 17:02:28 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/09 16:11:53 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 18:16:38 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,23 @@ int exec_builtin(t_cmd *cmd, t_env **env, t_minishell *shell)
     char **argv;
     
     argv = cmd->argv;
-    if(!argv || !argv[0])
-        return (0);
+	if (!argv || !argv[0])
+		return (0);
     if (!ft_strcmp(argv[0], "echo"))
     {
-        echo(cmd);
-        return(shell->exit_status);
+        shell->exit_status = echo(cmd);
+        return (shell->exit_status);
     }
-    if(!ft_strcmp(argv[0], "pwd"))
-    {
-        pwd(cmd);
-        return(shell->exit_status);
-    }
-    if(!ft_strcmp(argv[0], "env"))
-    {
-        env_print(*env, argv);
-        return(shell->exit_status);
-    }
+	if (!ft_strcmp(argv[0], "pwd"))
+	{
+		shell->exit_status = pwd(cmd);
+		return (shell->exit_status);
+	}
+	if (!ft_strcmp(argv[0], "env"))
+	{
+		shell->exit_status = env_print(*env, argv);
+		return (shell->exit_status);
+	}
     if(!ft_strcmp(argv[0], "exit"))
     {
         builtin_exit(cmd, shell);
