@@ -70,6 +70,9 @@ void	change_stdin(t_cmd *cmd)
 	if (dup2(fd_in, STDIN_FILENO) < 0)                //"Make STDIN_FILENO (standard input) point to the same file as fd_in."
 	{
     	perror("dup2");
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
     	exit(1);           //exit the child process
 	}
 	close(fd_in);
@@ -87,6 +90,9 @@ void	change_stdout(t_cmd *cmd)
 	if (dup2(fd_out, STDOUT_FILENO) < 0)
 	{
     	perror("dup2");
+        close(STDIN_FILENO);
+        close(STDOUT_FILENO);
+        close(STDERR_FILENO);
     	exit(1);
 	}
 	close(fd_out);

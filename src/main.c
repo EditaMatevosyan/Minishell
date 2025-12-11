@@ -1,15 +1,14 @@
-
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/06 15:11:20 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/11 12:52:10 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -112,6 +111,7 @@ int main(int argc, char **argv, char **env)
 	if (argc != 1)
 		return (1);
 
+	close_stray_fds();
     shell = minishell_init(env);
     // if (!shell)
     //     return (1);
@@ -133,5 +133,9 @@ int main(int argc, char **argv, char **env)
     free_tokens(&shell->tokens);
     free_env(shell->env);
     free(shell);
+    rl_clear_history();
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
 	return (0);
 }

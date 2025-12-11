@@ -84,14 +84,21 @@ void cleanup_and_exit(t_minishell *shell, int status)
     if (shell->input)
         free(shell->input);
 
-    close(*(shell->saved_stdin));
-    close(*(shell->saved_stdout));
+    if (shell->saved_stdin)
+        close(*(shell->saved_stdin));
+    if (shell->saved_stdout)
+        close(*(shell->saved_stdout));
     if (shell->fd_in != -1 && shell->fd_in != 0)
         close(shell->fd_in);
     if (shell->fd_out != -1 && shell->fd_out != 1)
         close(shell->fd_out);
     if (shell->fd_heredoc != -1)
         close(shell->fd_heredoc);
+    
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+
     rl_clear_history();
     free(shell);
 

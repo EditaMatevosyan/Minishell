@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/10 10:40:59 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/11 12:52:20 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -24,6 +24,8 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <sys/stat.h> 
+#include <sys/resource.h>
+#include <string.h>
 #include <errno.h>
 
 typedef enum e_token_type
@@ -191,5 +193,6 @@ void setup_child_io(t_cmd *cmd);
 void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array);
 void child_process(t_cmd *cmd, t_minishell *shell, char **envp_array);
 void parent_process(pid_t pid, char **envp_array);
+void close_stray_fds(void);
 
 #endif

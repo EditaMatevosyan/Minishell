@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:13:20 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:13:21 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 12:04:34 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,11 @@ int is_valid_identifier(char *str)
         i++;
     }
     return (1);
+}
+
+static int is_protected_unset(char *name)
+{
+    return (name && ft_strcmp(name, "_") == 0);
 }
 
 void env_remove(t_env **env, char *var)
@@ -72,7 +77,9 @@ void builtin_unset(t_cmd *cmd, t_minishell *shell)
     i = 0;
     while (av[i])
     {
-        if (is_valid_identifier(av[i]))
+        if (is_protected_unset(av[i]))
+            shell->exit_status = 1;
+        else if (is_valid_identifier(av[i]))
             env_remove(&shell->env, av[i]);
         else
         {

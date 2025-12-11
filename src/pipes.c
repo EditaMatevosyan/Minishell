@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:47 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:12:48 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/11 12:29:03 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,22 @@ int	**create_pipes(int n)
 		i++;
 	}
 	return (fds);
+}
+
+static void	free_pipes(int **fds, int n)
+{
+	int	i;
+
+	if (!fds)
+		return ;
+	i = 0;
+	while (i < n - 1)
+	{
+		if (fds[i])
+			free(fds[i]);
+		i++;
+	}
+	free(fds);
 }
 
 void	close_fds(int	**fds, int n)
@@ -131,9 +147,23 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
             envp = env_list_to_array(ms->env);
             path = get_full_path(cur, ms->env);
             if (!path)
+            {
+                fprintf(stderr, "minishell: %s: command not found\n", cur->argv[0]);
+                free_env_array(envp);
+                close(STDIN_FILENO);
+                close(STDOUT_FILENO);
+                close(STDERR_FILENO);
+                cleanup(cur, ms);
                 exit(127);
+            }
             execve(path, cur->argv, envp);
             perror("execve");
+            free_env_array(envp);
+            free(path);
+            close(STDIN_FILENO);
+            close(STDOUT_FILENO);
+            close(STDERR_FILENO);
+            cleanup(cur, ms);
             exit(126);
         }
         cur = cur->next;
@@ -142,13 +172,35 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n)
     return 0;
 }
 
+void close_all_heredoc_fds(t_cmd *cmd_list)
+{
+    t_cmd *cur = cmd_list;
+    int j;
+
+    while (cur)
+    {
+        if (cur->heredoc_fds)
+        {
+            j = 0;
+            while (j < cur->heredoc_count)
+            {
+                if (cur->heredoc_fds[j] != -1)
+                {
+                    close(cur->heredoc_fds[j]);
+                    cur->heredoc_fds[j] = -1;
+                }
+                j++;
+            }
+        }
+        cur = cur->next;
+    }
+}
 
 int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
 {
     int n;
     int **fds;
 	int	i;
-	int	j;
 	t_cmd *cur;
 
     n = count_commands(cmd_list);
@@ -157,29 +209,38 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
         return (-1);
     if (process_all_heredocs(cmd_list, ms) == -1)
 	{
+        if (fds)
+		{
+			close_fds(fds, n);
+            free_pipes(fds, n);
+		}
+        close_all_heredoc_fds(cmd_list);
     	return (-1);
 	}
 	if (fork_and_execute(cmd_list, ms, fds, n) == -1)
 	{
+        if (fds)
+		{
+			close_fds(fds, n);
+            free_pipes(fds, n);
+		}
+        close_all_heredoc_fds(cmd_list);
     	return (-1);
 	}
 	close_fds(fds, n);
+	if (fds)
+    {
+		free_pipes(fds, n);
+        fds = NULL;
+    }
 	i = 0;
 	while (i < n - 1)
 	{
 		i++;
 	}
 	cur = cmd_list;
-    while (cur)
-    {
-		j = 0;
-		while (j < cur->heredoc_count)
-		{
-			close(cur->heredoc_fds[j]);
-			j++;
-		}
-        cur = cur->next;
-    }
+    close_all_heredoc_fds(cmd_list);
+    n = count_commands(cmd_list);
     while (n > 0)
     {
         wait(NULL);

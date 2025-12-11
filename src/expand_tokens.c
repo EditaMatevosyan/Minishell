@@ -386,13 +386,19 @@ void free_cmd(t_cmd *cmd)
 				free(cmd->heredoc_delims[j]);
 			j++;
 		}
-		if (cmd->heredoc_fds)
-    		free(cmd->heredoc_fds);
-		if (cmd->heredoc_expands)
-    		free(cmd->heredoc_expands);
-		if (cmd->heredoc_delims)
-			free(cmd->heredoc_delims);
+        free(cmd->heredoc_delims);
+        cmd->heredoc_delims = NULL;
 	}
+    if (cmd->heredoc_fds)
+    {
+        free(cmd->heredoc_fds);
+        cmd->heredoc_fds = NULL;
+    }
+    if (cmd->heredoc_expands)
+    {
+        free(cmd->heredoc_expands);
+        cmd->heredoc_expands = NULL;
+    }
     free(cmd);
 }
 

@@ -2,12 +2,35 @@
 
 extern int g_exit_status;
 
+// Close everything except stdin/stdout/stderr so valgrind doesn't report
+// stray descriptors inherited from the IDE/terminal.
+void	close_stray_fds(void)
+{
+	struct rlimit	rl;
+	int				max_fd;
+	int				fd;
+
+	if (getrlimit(RLIMIT_NOFILE, &rl) == -1 || rl.rlim_cur == RLIM_INFINITY)
+		max_fd = 1024;
+	else
+		max_fd = (int)rl.rlim_cur;
+	fd = 3;
+	while (fd < max_fd)
+	{
+		close(fd);
+		fd++;
+	}
+}
+
 void	cleanup(t_cmd *cmd, t_minishell *shell)
 {
     free_cmd_list(&cmd);
     free_tokens(&shell->tokens);
     free_env(shell->env);
     free(shell);
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
 	return ;
 }
 
@@ -43,6 +66,7 @@ void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
 {
     struct stat st;
     char *path = get_full_path(cmd, shell->env);
+    int has_slash = (ft_strchr(cmd->argv[0], '/') != NULL);
 
     if (!path)
     {
@@ -53,7 +77,10 @@ void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
     }
     if (stat(path, &st) == -1)
     {
-        fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
+        if (has_slash)
+            fprintf(stderr, "minishell: %s: %s\n", path, strerror(errno));
+        else
+            fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
         free(path); free_env_array(envp_array); cleanup(cmd, shell);
         exit(127);
     }
