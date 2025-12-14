@@ -28,15 +28,15 @@ int acc_digits(const char **ps, int sign, long long *acc_out)
 	return (1);
 }
 
-static void	ms_print_exit(void)
+static void ms_print_exit(t_minishell *shell)
 {
-	if (isatty(STDIN_FILENO))
-		ft_putstr_fd("exit\n", 2);
+    if (!shell->in_pipeline && isatty(STDIN_FILENO))
+        ft_putstr_fd("exit\n", 2);
 }
 
 static void	ms_exit_numerr(t_minishell *shell, char *arg)
 {
-	ms_print_exit();
+	ms_print_exit(shell);
 	ft_putstr_fd("minishell: exit: ", 2);
 	ft_putstr_fd((char *)arg, 2);
 	ft_putstr_fd(": numeric argument required\n", 2);
@@ -55,7 +55,7 @@ void    builtin_exit(t_cmd *cmd, t_minishell *shell)
 
     if (!av[1])
     {
-        ms_print_exit();
+        ms_print_exit(shell);
         free_cmd_list(&cmd);
         cleanup_and_exit(shell, (unsigned char)shell->exit_status);
     }
@@ -71,12 +71,12 @@ void    builtin_exit(t_cmd *cmd, t_minishell *shell)
 	}
 	if (av[2])
 	{
-		ms_print_exit();
+		ms_print_exit(shell);
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		shell->exit_status = 1;
 		return ;
 	}
-    ms_print_exit();
+    ms_print_exit(shell);
     free_cmd_list(&cmd);
     cleanup_and_exit(shell, (unsigned char)val);
 }

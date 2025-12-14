@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/11 18:16:29 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/15 00:51:26 by rosie            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -79,6 +79,7 @@ typedef struct s_minishell
     int exit_status;
     int *saved_stdin;
     int *saved_stdout;
+	int	in_pipeline;
 } t_minishell;
 
 extern int g_exit_status;
@@ -176,7 +177,7 @@ int is_valid_identifier(char *str);
 int	count_commands(t_cmd	*cmd_list);
 int		execute_pipeline(t_cmd *cmd_list, t_minishell *ms);
 int		count_args(t_token *tok);
-int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n);
+int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n, pid_t *pids);
 void	setup_fds(t_cmd *cmds, int i, int n, int **fds);
 int		**create_pipes(int n);
 void	close_fds(int	**fds, int n);
