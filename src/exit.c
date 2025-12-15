@@ -41,33 +41,48 @@ static void	ms_exit_numerr(t_minishell *shell, char *arg)
 	ft_putstr_fd((char *)arg, 2);
 	ft_putstr_fd(": numeric argument required\n", 2);
 	free(arg);
+	if (shell->in_pipeline)
+	{
+		shell->exit_status = 2;
+		return ;
+	}
 	cleanup_and_exit(shell, 2);
 }
 
-void    builtin_exit(t_cmd *cmd, t_minishell *shell)
+void	builtin_exit(t_cmd *cmd, t_minishell *shell)
 {
-    char        **av;
-    long long   val;
+	char		**av;
+	long long	val;
 
-    av = cmd->argv;
-    if (!av || !av[0])
-        return ;
-
-    if (!av[1])
-    {
-        ms_print_exit(shell);
-        free_cmd_list(&cmd);
-        cleanup_and_exit(shell, (unsigned char)shell->exit_status);
-    }
-    if (!ft_atoll(av[1], &val))
+	av = cmd->argv;
+	if (!av || !av[0])
+		return ;
+	if (!av[1])
+	{
+		ms_print_exit(shell);
+		if (shell->in_pipeline)
+			return ;
+		free_cmd_list(&cmd);
+		cleanup_and_exit(shell, (unsigned char)shell->exit_status);
+	}
+	if (!ft_atoll(av[1], &val))
 	{
 		char	*arg_copy;
 
 		arg_copy = ft_strdup(av[1]);
-		free_cmd_list(&cmd);
+		if (!shell->in_pipeline)
+			free_cmd_list(&cmd);
 		if (!arg_copy)
+		{
+			if (shell->in_pipeline)
+			{
+				shell->exit_status = 255;
+				return ;
+			}
 			cleanup_and_exit(shell, 255);
+		}
 		ms_exit_numerr(shell, arg_copy);
+		return ;
 	}
 	if (av[2])
 	{
@@ -76,7 +91,12 @@ void    builtin_exit(t_cmd *cmd, t_minishell *shell)
 		shell->exit_status = 1;
 		return ;
 	}
-    ms_print_exit(shell);
-    free_cmd_list(&cmd);
-    cleanup_and_exit(shell, (unsigned char)val);
+	ms_print_exit(shell);
+	if (shell->in_pipeline)
+	{
+		shell->exit_status = (unsigned char)val;
+		return ;
+	}
+	free_cmd_list(&cmd);
+	cleanup_and_exit(shell, (unsigned char)val);
 }

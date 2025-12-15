@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:17 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/11 18:22:08 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/15 13:19:17 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int env_print(t_env *env, char **envp)
 {
 	t_env	*current;
 
-	ft_putstr_fd("[BUILTIN ENV CALLED]\n", 2);
 	if (envp[1])
 	{
 		ft_putstr_fd("minishell: env: too many arguments\n", 2);

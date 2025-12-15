@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:47 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/15 01:14:58 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/15 13:09:25 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -110,6 +110,41 @@ void	setup_fds(t_cmd *cmds, int i, int n, int **fds)
     change_stdout(cmds);
 }
 
+void	setup_fds_child(t_cmd *cmds, int i, int n, int **fds)
+{
+	int	last_heredoc;
+	
+	if (fds)
+    {
+        if (i > 0)
+            dup2(fds[i - 1][0], STDIN_FILENO);
+        if (i < n - 1)
+            dup2(fds[i][1], STDOUT_FILENO);
+        close_fds(fds, n);
+    }
+
+	if (cmds->heredoc_count > 0)
+	{
+    	last_heredoc = cmds->heredoc_count - 1;
+    	if (cmds->heredoc_fds &&
+        cmds->heredoc_fds[last_heredoc] != -1)
+    	{
+        	dup2(cmds->heredoc_fds[last_heredoc], STDIN_FILENO);
+        	for (int k = 0; k < cmds->heredoc_count; k++)
+    		{
+        		if (cmds->heredoc_fds[k] != -1)
+            		close(cmds->heredoc_fds[k]);
+    		}
+    	}
+	}
+	if (change_stdin(cmds) == -1 || change_stdout(cmds) == -1)
+    {
+        if (fds)
+            free_pipes(fds, n);
+        exit(1);
+    }
+}
+
 int process_all_heredocs(t_cmd *cmd_list, t_minishell *ms)
 {
     t_cmd *cur = cmd_list;
@@ -144,13 +179,14 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n, pid_t *
 
         if (pids[i] == 0)
         {
-            setup_fds(cur, i, n, fds);
+            setup_fds_child(cur, i, n, fds);
 
             if (is_builtin(cur))
 			{
                 st = exec_builtin(cur, &ms->env, ms);
                 if (fds)
                     free_pipes(fds, n);
+                free(pids);
 				cleanup(cmd_list, ms);
                 exit((unsigned char)st);
             }
@@ -165,6 +201,7 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n, pid_t *
                 cleanup(cmd_list, ms);
                 if (fds)
                     free_pipes(fds, n);
+                free(pids);
                 exit(127);
             }
 
@@ -176,6 +213,7 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n, pid_t *
             cleanup(cmd_list, ms);
             if (fds)
                 free_pipes(fds, n);
+            free(pids);
             exit(126);
         }
 

@@ -86,14 +86,22 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
         {
             fd = open_infile(cmd);
             if (fd < 0)
+            {
+                shell->exit_status = 1;
+                g_exit_status = 1;
                 return ;
+            }
             close(fd);
         }
         if (cmd->outfile)
         {
             fd = open_outfile(cmd);
             if (fd < 0)
+            {
+                shell->exit_status = 1;
+                g_exit_status = 1;
                 return ;
+            }
             close(fd);
         }
         return;

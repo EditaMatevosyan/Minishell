@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/11 18:07:13 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/15 13:12:08 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,10 @@ char *expand_str(char *str, t_env *env)
             if (!str[i] || (str[i] != '?' && !ft_isalnum(str[i]) && str[i] != '_'))
             {
                 char lit[2] = {'$', '\0'};
-                tmp = str_join_free(res, ft_strdup(lit));
+                char *lit_dup = ft_strdup(lit);
+                if (!lit_dup)
+                    return (free(res), NULL);
+                tmp = str_join_free(res, lit_dup);
                 if (!tmp)
                     return (NULL);
                 res = tmp;
@@ -38,7 +41,10 @@ char *expand_str(char *str, t_env *env)
 
             if (str[i] == '?')
             {
-                tmp = str_join_free(res, ft_itoa(g_exit_status));
+                char *exit_str = ft_itoa(g_exit_status);
+                if (!exit_str)
+                    return (free(res), NULL);
+                tmp = str_join_free(res, exit_str);
                 if (!tmp)
                     return (NULL);
                 res = tmp;
@@ -71,7 +77,10 @@ char *expand_str(char *str, t_env *env)
         else
         {
             char lit[2] = {str[i], '\0'};
-            tmp = str_join_free(res, ft_strdup(lit));
+            char *lit_dup = ft_strdup(lit);
+            if (!lit_dup)
+                return (free(res), NULL);
+            tmp = str_join_free(res, lit_dup);
             if (!tmp)
                 return (NULL);
             res = tmp;
@@ -160,11 +169,22 @@ static char *dup_or_expand_part(t_token *t, t_env *env)
     return ft_strdup(t->value);  // safety
 }
 
-static char *join_expanded_arg(t_token **tok, t_env *env)
+/* Joins glued T_WORD tokens into a single argv entry.
+ * If every part came from an unquoted expandable token and all expansions
+ * vanished, we skip creating an argument (shell removes empty fields). */
+static char *join_expanded_arg(t_token **tok, t_env *env, int *skip_arg)
 {
-    char *arg = NULL;
-    t_token *t = *tok;
+    char     *arg;
+    t_token  *t;
+    int       remove_candidate;
+    int       has_content;
 
+    arg = NULL;
+    t = *tok;
+    remove_candidate = 1;
+    has_content = 0;
+    if (skip_arg)
+        *skip_arg = 0;
     while (t && t->type == T_WORD)
     {
         char *part = dup_or_expand_part(t, env);
@@ -172,8 +192,11 @@ static char *join_expanded_arg(t_token **tok, t_env *env)
             free(arg); 
             return NULL; 
         }
-
-        if (!arg) 
+        if (t->quoted != 0 || t->expand == 0)
+            remove_candidate = 0;
+        if (part[0] != '\0')
+            has_content = 1;
+        if (!arg)
             arg = part;
         else {
             char *joined = malloc(ft_strlen(arg) + ft_strlen(part) + 1);
@@ -186,15 +209,18 @@ static char *join_expanded_arg(t_token **tok, t_env *env)
             free(arg); free(part);
             arg = joined;
         }
-
-        // consume current token
         t = t->next;
-
         if (!t || t->type != T_WORD || t->glued == 0)
             break;
     }
-
     *tok = t; // caller will continue from first unconsumed token
+    if (!has_content && remove_candidate)
+    {
+        free(arg);
+        if (skip_arg)
+            *skip_arg = 1;
+        return NULL;
+    }
     return arg;
 }
 
@@ -254,6 +280,7 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 		{
 			perror(value);
 			free(value);
+            g_exit_status = 1;
 			return (-1);
 		}
 		close(fd);
@@ -274,6 +301,7 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
         {
             perror(cmd->outfile);
             free(value);
+            g_exit_status = 1;
             return (-1);
         }
         close(prev_fd);
@@ -353,9 +381,12 @@ t_cmd *parse_command(t_token **cur, t_env *env)
     {
         if (tok->type == T_WORD)
         {
-            char *arg = join_expanded_arg(&tok, env);
-            if (!arg)
+            int skip_arg = 0;
+            char *arg = join_expanded_arg(&tok, env, &skip_arg);
+            if (!arg && !skip_arg)
                 return (free_cmd(cmd), NULL);
+            if (skip_arg)
+                continue;
             cmd->argv[argc++] = arg;
             continue;
         }

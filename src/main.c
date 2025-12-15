@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/15 00:58:43 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/15 13:32:51 by edmatevo         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -64,8 +64,8 @@ static void process_input(t_minishell *ms, char **input)
 	}
     if (syntax_check(ms->tokens))
     {
-        ms->exit_status = 258;
-        g_exit_status = 258;
+        ms->exit_status = 2;
+        g_exit_status = 2;
         free_tokens(&ms->tokens);
         return ;
     }
@@ -77,6 +77,7 @@ static void process_input(t_minishell *ms, char **input)
     cmds = parse_tokens(ms->tokens, ms->env);       //this is the head of the linked list
     if (!cmds)
     {
+        ms->exit_status = g_exit_status;
         free_tokens(&ms->tokens);
         return ;
     }

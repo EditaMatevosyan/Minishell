@@ -40,7 +40,7 @@ void setup_child_io(t_cmd *cmd)
     signal(SIGQUIT, SIG_DFL);
 
     if (change_stdin(cmd) == -1 || change_stdout(cmd) == -1)
-        exit(g_exit_status);
+        exit(1);
 
     if (cmd->heredoc_count > 0 && cmd->heredoc_fds)
     {
