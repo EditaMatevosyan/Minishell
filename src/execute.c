@@ -53,6 +53,7 @@ void execute_builtin_helper(t_cmd *cmd, t_minishell *shell)
     close(saved_stdout);
     shell->saved_stdin = NULL;
     shell->saved_stdout = NULL;
+    setup_sigreadline_handlers();
 }
 
 
@@ -109,10 +110,12 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
     if (cmd->heredoc_count > 0 && handle_heredoc(cmd, shell) == -1)
         return;
     if (is_builtin(cmd))
+    {
         return execute_builtin_helper(cmd, shell);
+    }
 
-    envp_array = prepare_env(shell);
     setup_sigexecute_handlers();
+    envp_array = prepare_env(shell);
     pid = fork();
     if (pid < 0)
     {

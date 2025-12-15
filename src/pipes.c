@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:47 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/15 13:09:25 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/15 15:30:41 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ void	setup_fds(t_cmd *cmds, int i, int n, int **fds)
 {
 	int	last_heredoc;
 	
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (fds)
     {
         if (i > 0)
@@ -106,38 +108,9 @@ void	setup_fds(t_cmd *cmds, int i, int n, int **fds)
     		}
     	}
 	}
-	change_stdin(cmds);
-    change_stdout(cmds);
-}
-
-void	setup_fds_child(t_cmd *cmds, int i, int n, int **fds)
-{
-	int	last_heredoc;
-	
-	if (fds)
-    {
-        if (i > 0)
-            dup2(fds[i - 1][0], STDIN_FILENO);
-        if (i < n - 1)
-            dup2(fds[i][1], STDOUT_FILENO);
-        close_fds(fds, n);
-    }
-
-	if (cmds->heredoc_count > 0)
-	{
-    	last_heredoc = cmds->heredoc_count - 1;
-    	if (cmds->heredoc_fds &&
-        cmds->heredoc_fds[last_heredoc] != -1)
-    	{
-        	dup2(cmds->heredoc_fds[last_heredoc], STDIN_FILENO);
-        	for (int k = 0; k < cmds->heredoc_count; k++)
-    		{
-        		if (cmds->heredoc_fds[k] != -1)
-            		close(cmds->heredoc_fds[k]);
-    		}
-    	}
-	}
-	if (change_stdin(cmds) == -1 || change_stdout(cmds) == -1)
+	// change_stdin(cmds);
+    // change_stdout(cmds);
+    if (change_stdin(cmds) == -1 || change_stdout(cmds) == -1)
     {
         if (fds)
             free_pipes(fds, n);
@@ -179,7 +152,7 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n, pid_t *
 
         if (pids[i] == 0)
         {
-            setup_fds_child(cur, i, n, fds);
+            setup_fds(cur, i, n, fds);
 
             if (is_builtin(cur))
 			{
@@ -259,6 +232,7 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
 	
 	
 	ms->in_pipeline = 1;
+    setup_sigexecute_handlers();
 	n = count_commands(cmd_list);
     fds = create_pipes(n);
 
@@ -311,6 +285,6 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
 	g_exit_status = ms->exit_status;
 
 	ms->in_pipeline = 0;
+    setup_sigreadline_handlers();
 	return 0;
 }
-

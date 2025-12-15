@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/15 13:32:51 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/15 15:57:13 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ static void run_shell(t_minishell *shell)
         shell->input = NULL;
         free_tokens(&shell->tokens);
     }
+    printf("exit\n");
 }
 
 int main(int argc, char **argv, char **env)

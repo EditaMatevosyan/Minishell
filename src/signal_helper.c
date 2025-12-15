@@ -3,20 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   signal_helper.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:40:24 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 18:24:33 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/15 16:05:55 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+extern int g_exit_status;
 
 //CTRL-C
 void    sigint_readline_handler(int sig)      //what should happen if the signal occurs
 {
     (void)sig;
     write(1, "\n", 1);
+    // g_exit_status = 130;
     rl_on_new_line();                // tell readline we're on new line
     rl_replace_line("", 0);          // clears whatever the user was typing
     rl_redisplay();                  // redraw prompt
@@ -27,6 +30,7 @@ void    sigint_handler_for_execution(int sig)
 {
     (void)sig;
     write(STDOUT_FILENO, "\n", 1);
+    // g_exit_status = 130;
 }
 
 void setup_sigreadline_handlers(void)
@@ -47,7 +51,7 @@ void setup_sigexecute_handlers(void)
 {
     struct sigaction sa;
 
-    sa.sa_handler = sigint_handler_for_execution;
+    sa.sa_handler = SIG_IGN;
     sigemptyset(&sa.sa_mask);    //no additional signals are blocked
     sa.sa_flags = 0;
     sigaction(SIGINT, &sa, NULL);
