@@ -135,5 +135,6 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
             k++;
         }
         parent_process(pid, envp_array);
+        shell->exit_status = g_exit_status;
 	}
 }

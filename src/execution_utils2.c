@@ -146,6 +146,8 @@ void parent_process(pid_t pid, char **envp_array)
     if (WIFSIGNALED(status))
     {
         int sig = WTERMSIG(status);
+        if (sig == SIGINT)
+            write(STDOUT_FILENO, "\n", 1);
         if (sig == SIGQUIT)
             printf("Quit (core dumped)\n");
         g_exit_status = 128 + sig;

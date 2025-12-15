@@ -19,7 +19,7 @@ void    sigint_readline_handler(int sig)      //what should happen if the signal
 {
     (void)sig;
     write(1, "\n", 1);
-    // g_exit_status = 130;
+    g_exit_status = 130;
     rl_on_new_line();                // tell readline we're on new line
     rl_replace_line("", 0);          // clears whatever the user was typing
     rl_redisplay();                  // redraw prompt
@@ -30,7 +30,7 @@ void    sigint_handler_for_execution(int sig)
 {
     (void)sig;
     write(STDOUT_FILENO, "\n", 1);
-    // g_exit_status = 130;
+    g_exit_status = 130;
 }
 
 void setup_sigreadline_handlers(void)

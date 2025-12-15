@@ -280,7 +280,11 @@ int execute_pipeline(t_cmd *cmd_list, t_minishell *ms)
     if (WIFEXITED(last_status))
     	ms->exit_status = WEXITSTATUS(last_status);
 	else if (WIFSIGNALED(last_status))
+    {
+        if (WTERMSIG(last_status) == SIGINT)
+            write(STDOUT_FILENO, "\n", 1);
     	ms->exit_status = 128 + WTERMSIG(last_status);
+    }
 
 	g_exit_status = ms->exit_status;
 
