@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 16:00:49 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 16:26:47 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,6 +235,9 @@ int	try_open_outfile(t_cmd *cmd, t_minishell *shell);
 int	handle_empty_argv(t_cmd *cmd, t_minishell *shell);
 void	close_heredoc_fds(t_cmd *cmd);
 void	execution_after_forking(t_cmd *cmd, t_minishell *shell);
+char	**prepare_env(t_minishell *shell);
+int	handle_heredoc(t_cmd *cmd, t_minishell *shell);
+void	execute_builtin_helper(t_cmd *cmd, t_minishell *shell);
 
 
 #endif

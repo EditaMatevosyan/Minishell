@@ -25,7 +25,6 @@ SRCS_NAME = main.c \
 			ft_split.c \
 			temp.c \
 			redirections.c \
-			execute.c \
 			execution_utils1.c \
 			syntax_validation.c \
 			built_in.c \
@@ -49,7 +48,10 @@ SRCS_NAME = main.c \
 			execution_utils2.c \
 			execution_utils3.c \
 			execution_utils4.c \
-			execution_utils5.c
+			execution_utils5.c \
+			execute1.c \
+			execute2.c \
+			execute3.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))
