@@ -11,11 +11,13 @@ OBJS_DIR = objs/
 SRCS_NAME = main.c \
 			tokenization.c \
 			tokenize_input.c \
+			tokenize_basic.c \
 			tokenize_quotes.c \
 			libft_ut1.c \
 			libft_ut2.c \
 			libft_ut3.c \
 			libft_ut4.c \
+			libft_ut5.c \
 			copy_env.c \
 			tokenize_env.c \
 			expand_tokens.c \
@@ -38,6 +40,10 @@ SRCS_NAME = main.c \
 			pipes.c \
 			heredoc_utils.c \
 			export.c \
+			export_utils.c \
+			export_env.c \
+			export_sort.c \
+			export_display.c \
 			unset.c \
 			signal_helper.c \
 			execution_utils2.c \

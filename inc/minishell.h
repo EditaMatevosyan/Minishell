@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 15:08:00 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 15:33:55 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void free_tokens(t_token **list);
 char	*extract_operator(char *input, int *i);
 char	*extract_quoted(char **input, int *i, int *expand, int *quoted);
 char	*extract_word(char *input, int *i);
+int	handle_operator_token(t_minishell *shell, char *input, int *i);
 
 int is_space(char c);
 int is_quote(char c);
@@ -188,6 +189,12 @@ char *cd_resolve_path(char **av, t_minishell *sh);
 int   cd_set_oldpwd(t_minishell *sh);                
 int   cd_update_pwd(t_minishell *sh); 
 void	builtin_export(t_cmd *cmd, t_minishell *shell);
+void	export_print(t_env *env);
+void	sort_env_by_key(char **arr);
+char	**env_list_to_array_for_export(t_env *env);
+void	env_add_if_missing(t_env **env, char *key);
+void	export_ident_error(const char *arg, t_minishell *sh);
+void	ft_putnstr_fd(char *s, int n, int fd);
 void	builtin_unset(t_cmd *cmd, t_minishell *shell);
 int is_valid_identifier(char *str);
 int	count_commands(t_cmd	*cmd_list);

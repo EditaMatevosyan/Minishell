@@ -6,194 +6,47 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:22 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 13:35:58 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 15:27:42 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_putnstr_fd(char *s, int n, int fd)
+static char	*extract_key(char *arg, char *eq, int *append)
 {
-	write(fd, s, n);
-}
-
-static void	export_ident_error(const char *arg, t_minishell *sh)
-{
-	ft_putstr_fd("minishell: export: `", 2);
-	ft_putstr_fd((char *)arg, 2);
-	ft_putstr_fd("': not a valid identifier\n", 2);
-	sh->exit_status = 1;
-}
-
-void	env_add_if_missing(t_env **env, char *key)
-{
-	if (!get_env_value(*env, key))
-		env_add_back(env, env_new(key, NULL));
-}
-
-void	sort_env(char **arr)
-{
-	int		i;
-	int		j;
-	char	*temp;
-
-	i = 0;
-	while (arr[i])
+	if (eq > arg && *(eq - 1) == '+')
 	{
-		j = i + 1;
-		while (arr[j])
-		{
-			if (ft_strcmp(arr[i], arr[j]) > 0)
-			{
-				temp = arr[i];
-				arr[i] = arr[j];
-				arr[j] = temp;
-			}
-			j++;
-		}
-		i++;
+		*append = 1;
+		return (ft_substr(arg, 0, eq - arg - 1));
 	}
+	return (ft_substr(arg, 0, eq - arg));
 }
 
-static void	print_escaped(const char *s)
+static int	process_assignment(char *arg, char *eq, t_minishell *sh)
 {
-	while (*s)
-	{
-		if (*s == '\"' || *s == '\\' || *s == '$')
-			ft_putchar_fd('\\', 1);
-		ft_putchar_fd(*s++, 1);
-	}
-}
+	int		append;
+	char	*key;
 
-static int	key_cmp(const char *a, const char *b)
-{
-	int	i;
-
-	i = 0;
-	while (a[i] && a[i] != '=' && b[i] && b[i] != '=')
-	{
-		if (a[i] != b[i])
-			return ((unsigned char)a[i] - (unsigned char)b[i]);
-		i++;
-	}
-	if ((a[i] == '\0' || a[i] == '=') && (b[i] == '\0' || b[i] == '='))
-		return (0);
-	if (a[i] == '\0' || a[i] == '=')
-		return (-1);
+	append = 0;
+	key = extract_key(arg, eq, &append);
+	if (!key)
+		return (sh->exit_status = 1, 0);
+	if (!is_valid_identifier(key))
+		export_ident_error(arg, sh);
+	else if (append)
+		append_env_value(&sh->env, key, eq + 1);
+	else
+		set_env_value(&sh->env, key, eq + 1);
+	free(key);
 	return (1);
 }
 
-static void	sort_env_by_key(char **arr)
+static void	process_no_equal(char *arg, t_minishell *sh)
 {
-	int		i;
-	int		j;
-	char	*tmp;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (arr[i])
-	{
-		j = i + 1;
-		while (arr[j])
-		{
-			if (key_cmp(arr[i], arr[j]) > 0)
-			{
-				tmp = arr[i];
-				arr[i] = arr[j];
-				arr[j] = tmp;
-			}
-			j++;
-		}
-		i++;
-	}
-}
-
-static void	free_str_array(char **arr, int count)
-{
-	int	i;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (i < count)
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
-}
-
-static char	**env_list_to_array_for_export(t_env *env)
-{
-	int		len;
-	int		i;
-	t_env	*tmp;
-	char	**arr;
-	char	*with_eq;
-
-	len = 0;
-	tmp = env;
-	while (tmp)
-	{
-		len++;
-		tmp = tmp->next;
-	}
-	arr = malloc(sizeof(char *) * (len + 1));
-	if (!arr)
-		return (NULL);
-	i = 0;
-	tmp = env;
-	while (tmp)
-	{
-		if (tmp->value == NULL)
-			arr[i] = ft_strdup(tmp->var);
-		else
-		{
-			with_eq = ft_strjoin(tmp->var, "=");
-			if (!with_eq)
-				return (free_str_array(arr, i), NULL);
-			arr[i] = ft_strjoin(with_eq, tmp->value);
-			free(with_eq);
-			if (!arr[i])
-				return (free_str_array(arr, i), NULL);
-		}
-		tmp = tmp->next;
-		i++;
-	}
-	arr[i] = NULL;
-	return (arr);
-}
-
-void	export_print(t_env *env)
-{
-	char	**arr;
-	int		i;
-	char	*eq;
-
-	arr = env_list_to_array_for_export(env);
-	if (!arr)
-		return ;
-	sort_env_by_key(arr);
-	i = 0;
-	while (arr[i])
-	{
-		ft_putstr_fd("declare -x ", 1);
-		eq = ft_strchr(arr[i], '=');
-		if (!eq)
-			ft_putstr_fd(arr[i], 1);
-		else
-		{
-			ft_putnstr_fd(arr[i], (int)(eq - arr[i] + 1), 1);
-			ft_putstr_fd("\"", 1);
-			print_escaped(eq + 1);
-			ft_putstr_fd("\"", 1);
-		}
-		ft_putstr_fd("\n", 1);
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
+	if (!is_valid_identifier(arg))
+		export_ident_error(arg, sh);
+	else
+		env_add_if_missing(&sh->env, arg);
 }
 
 void	builtin_export(t_cmd *cmd, t_minishell *sh)
@@ -201,8 +54,6 @@ void	builtin_export(t_cmd *cmd, t_minishell *sh)
 	int		i;
 	char	*arg;
 	char	*eq;
-	char	*key;
-	int		append;
 
 	sh->exit_status = 0;
 	if (!cmd->argv[1])
@@ -212,36 +63,10 @@ void	builtin_export(t_cmd *cmd, t_minishell *sh)
 	{
 		arg = cmd->argv[i];
 		eq = ft_strchr(arg, '=');
-		append = 0;
 		if (!eq)
-		{
-			if (!is_valid_identifier(arg))
-				export_ident_error(arg, sh);
-			else
-				env_add_if_missing(&sh->env, arg);
-		}
-		else
-		{
-			if (eq > arg && *(eq - 1) == '+')
-			{
-				append = 1;
-				key = ft_substr(arg, 0, eq - arg - 1);
-			}
-			else
-				key = ft_substr(arg, 0, eq - arg);
-			if (!key)
-				return ((void)(sh->exit_status = 1));
-			if (!is_valid_identifier(key))
-				export_ident_error(arg, sh);
-			else
-			{
-				if (append)
-					append_env_value(&sh->env, key, eq + 1);
-				else
-					set_env_value(&sh->env, key, eq + 1);
-			}
-			free(key);
-		}
+			process_no_equal(arg, sh);
+		else if (!process_assignment(arg, eq, sh))
+			return ;
 		i++;
 	}
 }

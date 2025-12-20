@@ -1,35 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft_ut1.c                                        :+:      :+:    :+:   */
+/*   export_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/30 15:45:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 15:28:14 by edmatevo         ###   ########.fr       */
+/*   Created: 2025/12/20 14:29:38 by edmatevo          #+#    #+#             */
+/*   Updated: 2025/12/20 14:29:39 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	is_special(char c)
+void	ft_putnstr_fd(char *s, int n, int fd)
 {
-	if (c == '|' || c == '<' || c == '>')
-		return (1);
-	return (0);
+	write(fd, s, n);
 }
 
-int	is_space(char c)
+void	export_ident_error(const char *arg, t_minishell *sh)
 {
-	return (c == ' ' || (c >= 9 && c <= 13));
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd((char *)arg, 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
+	sh->exit_status = 1;
 }
 
-int	is_quote(char c)
+void	env_add_if_missing(t_env **env, char *key)
 {
-	return (c == '"' || c == '\'');
-}
-
-int	is_operator(char c)
-{
-	return (c == '|' || c == '<' || c == '>');
+	if (!get_env_value(*env, key))
+		env_add_back(env, env_new(key, NULL));
 }
