@@ -40,7 +40,10 @@ SRCS_NAME = main.c \
 			export.c \
 			unset.c \
 			signal_helper.c \
-			execution_utils2.c
+			execution_utils2.c \
+			execution_utils3.c \
+			execution_utils4.c \
+			execution_utils5.c
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))

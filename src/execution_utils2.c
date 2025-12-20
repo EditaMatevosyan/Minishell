@@ -1,160 +1,104 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_utils2.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/20 14:35:38 by romargar          #+#    #+#             */
+/*   Updated: 2025/12/20 15:02:58 by romargar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-extern int g_exit_status;
+extern int	g_exit_status;
 
-// Close everything except stdin/stdout/stderr so valgrind doesn't report
-// stray descriptors inherited from the IDE/terminal.
-void	close_stray_fds(void)
+static void	exec_check_dir(t_exec_ctx *ctx, char *path, int has_slash,
+		struct stat *st)
 {
-	struct rlimit	rl;
-	int				max_fd;
-	int				fd;
+	t_exec_err	err;
 
-	if (getrlimit(RLIMIT_NOFILE, &rl) == -1 || rl.rlim_cur == RLIM_INFINITY)
-		max_fd = 1024;
-	else
-		max_fd = (int)rl.rlim_cur;
-	fd = 3;
-	while (fd < max_fd)
+	if (!S_ISDIR(st->st_mode))
+		return ;
+	if (has_slash)
 	{
-		close(fd);
-		fd++;
+		err.name = path;
+		err.msg = ": Is a directory\n";
+		err.to_free = path;
+		err.code = 126;
+		exec_error_msg_free(ctx, &err);
+	}
+	err.name = ctx->cmd->argv[0];
+	err.msg = ": command not found\n";
+	err.to_free = path;
+	err.code = 127;
+	exec_error_msg_free(ctx, &err);
+}
+
+static void	exec_check_regular(t_exec_ctx *ctx, char *path, struct stat *st)
+{
+	t_exec_err	err;
+
+	if (!S_ISREG(st->st_mode))
+	{
+		err.name = ctx->cmd->argv[0];
+		err.msg = ": command not found\n";
+		err.to_free = path;
+		err.code = 127;
+		exec_error_msg_free(ctx, &err);
+	}
+	if (access(path, X_OK) != 0)
+	{
+		err.name = ctx->cmd->argv[0];
+		err.msg = ": Permission denied\n";
+		err.to_free = path;
+		err.code = 126;
+		exec_error_msg_free(ctx, &err);
 	}
 }
 
-void	cleanup(t_cmd *cmd_list, t_minishell *shell)
+static void	exec_path_checks(t_exec_ctx *ctx, char *path, int has_slash)
 {
-    free_cmd_list(&cmd_list);
-    free_tokens(&shell->tokens);
-    free_env(shell->env);
-    free(shell);
-    close(STDIN_FILENO);
-    close(STDOUT_FILENO);
-    close(STDERR_FILENO);
-	return ;
+	struct stat	st;
+
+	exec_stat_or_notfound(ctx, path, has_slash, &st);
+	exec_check_dir(ctx, path, has_slash, &st);
+	exec_check_regular(ctx, path, &st);
 }
 
-void setup_child_io(t_cmd *cmd)
+void	validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
 {
-    signal(SIGINT, SIG_DFL);
-    signal(SIGQUIT, SIG_DFL);
+	t_exec_ctx	ctx;
+	char		*path;
+	int			has_slash;
+	t_exec_err	err;
 
-    if (change_stdin(cmd) == -1 || change_stdout(cmd) == -1)
-        exit(1);
-
-    if (cmd->heredoc_count > 0 && cmd->heredoc_fds)
-    {
-        int last = cmd->heredoc_count - 1;
-        if (cmd->heredoc_fds[last] != -1)
-            dup2(cmd->heredoc_fds[last], STDIN_FILENO);
-
-        int k = 0;
-        while (k < cmd->heredoc_count)
-        {
-            if (cmd->heredoc_fds[k] != -1)
-                close(cmd->heredoc_fds[k]);
-            k++;
-        }
-    }
+	ctx.cmd = cmd;
+	ctx.shell = shell;
+	ctx.envp_array = envp_array;
+	path = get_full_path(cmd, shell->env);
+	has_slash = (ft_strchr(cmd->argv[0], '/') != NULL);
+	if (!path)
+	{
+		err.name = cmd->argv[0];
+		err.msg = ": command not found\n";
+		err.to_free = NULL;
+		err.code = 127;
+		exec_error_msg_free(&ctx, &err);
+	}
+	exec_path_checks(&ctx, path, has_slash);
+	execve(path, cmd->argv, envp_array);
+	cleanup(cmd, shell);
+	free(path);
 }
 
-
-
-void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array)
+void	child_process(t_cmd *cmd, t_minishell *shell, char **envp_array)
 {
-    struct stat st;
-    char *path = get_full_path(cmd, shell->env);
-    int has_slash = (ft_strchr(cmd->argv[0], '/') != NULL);
-
-    if (!path)
-    {
-        fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-        free_env_array(envp_array);
-        cleanup(cmd, shell);
-        exit(127);
-    }
-    if (stat(path, &st) == -1)
-    {
-        if (has_slash)
-            fprintf(stderr, "minishell: %s: %s\n", path, strerror(errno));
-        else
-            fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-        free(path);
-        free_env_array(envp_array);
-        cleanup(cmd, shell);
-        exit(127);
-    }
-    if (S_ISDIR(st.st_mode))
-    {
-        if (ft_strchr(cmd->argv[0], '/'))
-        {
-            fprintf(stderr, "minishell: %s: Is a directory\n", path);
-            free(path);
-            free_env_array(envp_array);
-            cleanup(cmd, shell);
-            exit(126);
-        }
-        fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-        free(path); free_env_array(envp_array); cleanup(cmd, shell);
-        exit(127);
-    }
-    if (!S_ISREG(st.st_mode))
-    {
-        fprintf(stderr, "minishell: %s: command not found\n", cmd->argv[0]);
-        free(path); free_env_array(envp_array); cleanup(cmd, shell);
-        exit(127);
-    }
-    if (access(path, X_OK) != 0)
-    {
-        fprintf(stderr, "minishell: %s: Permission denied\n", cmd->argv[0]);
-        free(path); free_env_array(envp_array); cleanup(cmd, shell);
-        exit(126);
-    }
-
-    execve(path, cmd->argv, envp_array);
-    cleanup(cmd, shell);
-    free(path); // only reached if execve fails
-}
-
-
-
-void child_process(t_cmd *cmd, t_minishell *shell, char **envp_array)
-{
-    setup_child_io(cmd);
-    validate_and_exec(cmd, shell, envp_array);
-    perror("minishell");
-    free_env_array(envp_array);
-    cleanup(cmd, shell);
-    exit(126);
-}
-
-
-void parent_process(pid_t pid, char **envp_array)
-{
-    int status = 0;
-
-    while (waitpid(pid, &status, 0) == -1)
-    {
-        if (errno == EINTR)
-            continue;
-        perror("waitpid");
-        status = 1 << 8;
-        break;
-    }
-    free_env_array(envp_array);
-
-    if (WIFSIGNALED(status))
-    {
-        int sig = WTERMSIG(status);
-        if (sig == SIGINT)
-            write(STDOUT_FILENO, "\n", 1);
-        if (sig == SIGQUIT)
-            printf("Quit (core dumped)\n");
-        g_exit_status = 128 + sig;
-    }
-    else if (WIFEXITED(status))
-    {
-        g_exit_status = WEXITSTATUS(status);
-    }
-    setup_sigreadline_handlers();
+	setup_child_io(cmd);
+	validate_and_exec(cmd, shell, envp_array);
+	perror("minishell");
+	free_env_array(envp_array);
+	cleanup(cmd, shell);
+	exit(126);
 }

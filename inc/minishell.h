@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rosie <rosie@student.42.fr>                +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/15 00:51:26 by rosie            ###   ########.fr       */
+/*   Updated: 2025/12/20 15:03:38 by romargar         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -37,6 +37,21 @@ typedef enum e_token_type
     T_APPEND,
     T_HEREDOC
 } t_token_type;
+
+typedef struct s_exec_ctx
+{
+	t_cmd		*cmd;
+	t_minishell	*shell;
+	char		**envp_array;
+}	t_exec_ctx;
+
+typedef struct s_exec_err
+{
+	char	*name;
+	char	*msg;
+	char	*to_free;
+	int		code;
+}	t_exec_err;
 
 typedef struct s_token
 {
@@ -196,5 +211,9 @@ void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array);
 void child_process(t_cmd *cmd, t_minishell *shell, char **envp_array);
 void parent_process(pid_t pid, char **envp_array);
 void close_stray_fds(void);
+void	exec_error_msg_free(t_exec_ctx *ctx, t_exec_err *err);
+void	exec_error_errno(t_exec_ctx *ctx, char *path, int code);
+void	exec_stat_or_notfound(t_exec_ctx *ctx, char *path, int has_slash,
+		struct stat *st);
 
 #endif
