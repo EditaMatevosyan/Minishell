@@ -36,7 +36,6 @@ SRCS_NAME = main.c \
 			exit.c \
 			exit_helper.c \
 			process_heredoc.c \
-			pipes.c \
 			heredoc_utils.c \
 			export.c \
 			export_utils.c \
@@ -51,7 +50,13 @@ SRCS_NAME = main.c \
 			execution_utils5.c \
 			execute1.c \
 			execute2.c \
-			execute3.c
+			execute3.c \
+			pipes1.c \
+			pipes2.c \
+			pipes3.c \
+			pipes4.c \
+			pipes5.c
+
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 OBJS = $(addprefix $(OBJS_DIR), $(OBJS_NAME))

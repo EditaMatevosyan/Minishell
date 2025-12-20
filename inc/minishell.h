@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 16:26:47 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:05:38 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ typedef struct s_cmd
     char	*outfile;
     int		append;
 	int		heredoc_count;
-	char	**heredoc_delims;        //array of heredoc delimiter names
-	int		*heredoc_fds;         //array of heredoc fds...
+	char	**heredoc_delims;
+	int		*heredoc_fds;
 	int		*heredoc_expands;
     int     invalid_redir;
     struct s_cmd *next;
@@ -97,6 +97,15 @@ typedef struct s_exec_err
 	char	*to_free;
 	int		code;
 }	t_exec_err;
+
+typedef struct s_exec_ctx_2
+{
+	t_cmd		*cmd_list;
+	t_minishell	*ms;
+	int			**fds;
+	int			n;
+	pid_t		*pids;
+}	t_exec_ctx_2;
 
 extern int g_exit_status;
 
@@ -200,7 +209,6 @@ int is_valid_identifier(char *str);
 int	count_commands(t_cmd	*cmd_list);
 int		execute_pipeline(t_cmd *cmd_list, t_minishell *ms);
 int		count_args(t_token *tok);
-int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n, pid_t *pids);
 void	setup_fds(t_cmd *cmds, int i, int n, int **fds);
 int		**create_pipes(int n);
 void	close_fds(int	**fds, int n);
@@ -215,7 +223,6 @@ void setup_sigexecute_handlers(void);
 void	cleanup(t_cmd *cmd_list, t_minishell *shell);
 void setup_child_io(t_cmd *cmd);
 void validate_and_exec(t_cmd *cmd, t_minishell *shell, char **envp_array);
-void child_process(t_cmd *cmd, t_minishell *shell, char **envp_array);
 void parent_process(pid_t pid, char **envp_array);
 void close_stray_fds(void);
 void	exec_error_msg_free(t_exec_ctx *ctx, t_exec_err *err);
@@ -238,6 +245,23 @@ void	execution_after_forking(t_cmd *cmd, t_minishell *shell);
 char	**prepare_env(t_minishell *shell);
 int	handle_heredoc(t_cmd *cmd, t_minishell *shell);
 void	execute_builtin_helper(t_cmd *cmd, t_minishell *shell);
+void	free_pipes(int **fds, int n);
+void	setup_child_signals(void);
+void	setup_pipe_fds(int i, int n, int **fds);
+void	setup_heredoc_fds(t_cmd *cmds);
+void	finalize_stdio_or_exit(t_cmd *cmds, int **fds, int n);
+void	exit_child(t_exec_ctx_2 *ctx, int code);
+void	exec_external_or_exit(t_cmd *cur, t_exec_ctx_2 *ctx);
+void	child_process_2(t_cmd *cur, int i, t_exec_ctx_2 *ctx);
+int	fork_and_execute(t_exec_ctx_2 *ctx);
+int	prepare_pipeline(t_exec_ctx_2 *ctx);
+void	cleanup_pipeline_fds(t_exec_ctx_2 *ctx);
+int	wait_pipeline(t_exec_ctx_2 *ctx);
+void	init_exec_ctx_2(t_exec_ctx_2 *ctx, t_cmd *cmd_list, t_minishell *ms);
+void	update_exit_status(t_minishell *ms, int last_status);
+int	run_pipeline(t_exec_ctx_2 *ctx);
+void	child_process(t_cmd *cmd, t_minishell *shell, char **envp_array);
+void	close_all_heredoc_fds(t_cmd *cmd_list);
 
 
 #endif

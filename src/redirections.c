@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:13:03 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/11 17:24:16 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 16:47:43 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-//open the infile(the file with which the stdin should be replaced) and take its file descriptor
 
 int	open_infile(t_cmd *cmd)
 {
