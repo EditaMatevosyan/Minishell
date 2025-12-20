@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 14:33:01 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 15:04:12 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:21:21 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_exit_status;
 
 void	free_split(char **str)
 {

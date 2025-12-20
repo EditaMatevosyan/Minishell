@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 15:57:18 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 16:01:19 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:19:53 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_exit_status;
 
 int	try_open_outfile(t_cmd *cmd, t_minishell *shell)
 {

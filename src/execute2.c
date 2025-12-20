@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 15:58:47 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 15:59:19 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:19:48 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_exit_status;
 
 void	handle_builtin_redir_failure(t_minishell *shell, int saved_stdin,
 		int saved_stdout)

@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-extern int	g_exit_status;
-
 void	exec_error_msg_free(t_exec_ctx *ctx, t_exec_err *err)
 {
 	ft_putstr_fd("minishell: ", 2);

@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 14:26:31 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 14:32:15 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:21:14 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_exit_status;
 
 static char	*find_exec_in_dirs(char **directories, char *command)
 {

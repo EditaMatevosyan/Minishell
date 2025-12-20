@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 15:50:15 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 15:58:26 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:19:44 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_exit_status;
 
 int	handle_heredoc(t_cmd *cmd, t_minishell *shell)
 {

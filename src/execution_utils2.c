@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 14:35:38 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 15:02:58 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:21:18 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_exit_status;
 
 static void	exec_check_dir(t_exec_ctx *ctx, char *path, int has_slash,
 		struct stat *st)

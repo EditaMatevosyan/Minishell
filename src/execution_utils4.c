@@ -6,13 +6,11 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 14:59:10 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 15:01:13 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:21:25 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_exit_status;
 
 void	setup_child_io(t_cmd *cmd)
 {

@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   signal_helper.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:40:24 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/15 16:05:55 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:19:34 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int g_exit_status;
 
 //CTRL-C
 void    sigint_readline_handler(int sig)      //what should happen if the signal occurs
