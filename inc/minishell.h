@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 15:03:38 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 15:08:00 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,6 @@ typedef enum e_token_type
     T_APPEND,
     T_HEREDOC
 } t_token_type;
-
-typedef struct s_exec_ctx
-{
-	t_cmd		*cmd;
-	t_minishell	*shell;
-	char		**envp_array;
-}	t_exec_ctx;
-
-typedef struct s_exec_err
-{
-	char	*name;
-	char	*msg;
-	char	*to_free;
-	int		code;
-}	t_exec_err;
 
 typedef struct s_token
 {
@@ -97,6 +82,21 @@ typedef struct s_minishell
     int *saved_stdout;
 	int	in_pipeline;
 } t_minishell;
+
+typedef struct s_exec_ctx
+{
+	t_cmd		*cmd;
+	t_minishell	*shell;
+	char		**envp_array;
+}	t_exec_ctx;
+
+typedef struct s_exec_err
+{
+	char	*name;
+	char	*msg;
+	char	*to_free;
+	int		code;
+}	t_exec_err;
 
 extern int g_exit_status;
 
