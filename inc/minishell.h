@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 17:05:38 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 17:28:52 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,14 @@ typedef struct s_exec_ctx_2
 	int			n;
 	pid_t		*pids;
 }	t_exec_ctx_2;
+
+typedef struct s_heredoc_ctx
+{
+	t_cmd	*cmd;
+	t_env	*env;
+	int		idx;
+	int		fd_out;
+}	t_heredoc_ctx;
 
 extern int g_exit_status;
 
