@@ -77,6 +77,13 @@ void execute_command(t_cmd *cmd, t_minishell *shell)
 
     if (!cmd)
         return;
+    
+    if (cmd->invalid_redir)
+    {
+        shell->exit_status = 1;
+        g_exit_status = 1;
+        return ;
+    }
 
         //for the case < in > out
     if (!cmd->argv || !cmd->argv[0])

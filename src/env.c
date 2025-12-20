@@ -6,20 +6,20 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:17 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/15 13:19:17 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 13:13:25 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int env_print(t_env *env, char **envp)
+int	env_print(t_env *env, char **envp)
 {
 	t_env	*current;
 
 	if (envp[1])
 	{
 		ft_putstr_fd("minishell: env: too many arguments\n", 2);
-		return 127;
+		return (127);
 	}
 	current = env;
 	while (current)
@@ -33,5 +33,5 @@ int env_print(t_env *env, char **envp)
 		}
 		current = current->next;
 	}
-	return 0;
+	return (0);
 }

@@ -58,6 +58,7 @@ typedef struct s_cmd
 	char	**heredoc_delims;        //array of heredoc delimiter names
 	int		*heredoc_fds;         //array of heredoc fds...
 	int		*heredoc_expands;
+    int     invalid_redir;
     struct s_cmd *next;
 } t_cmd;
 

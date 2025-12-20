@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft_ut4.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:42 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:12:43 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 13:29:45 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,36 +71,4 @@ int ft_atoll(const char *s, long long *out)
     else
         *out = acc * sign;
     return (1);
-}
-
-// 
-
-void cleanup_and_exit(t_minishell *shell, int status)
-{
-    if (shell->tokens)
-        free_tokens(&shell->tokens);
-    if (shell->env)
-        free_env(shell->env);
-    if (shell->input)
-        free(shell->input);
-
-    if (shell->saved_stdin)
-        close(*(shell->saved_stdin));
-    if (shell->saved_stdout)
-        close(*(shell->saved_stdout));
-    if (shell->fd_in != -1 && shell->fd_in != 0)
-        close(shell->fd_in);
-    if (shell->fd_out != -1 && shell->fd_out != 1)
-        close(shell->fd_out);
-    if (shell->fd_heredoc != -1)
-        close(shell->fd_heredoc);
-    
-    close(STDIN_FILENO);
-    close(STDOUT_FILENO);
-    close(STDERR_FILENO);
-
-    rl_clear_history();
-    free(shell);
-
-    exit(status);
 }

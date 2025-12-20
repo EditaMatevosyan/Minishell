@@ -1,37 +1,21 @@
-#include "minishell.h" 
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/20 13:15:02 by edmatevo          #+#    #+#             */
+/*   Updated: 2025/12/20 13:30:24 by edmatevo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int acc_digits(const char **ps, int sign, long long *acc_out)
+#include "minishell.h"
+
+static void	ms_print_exit(t_minishell *shell)
 {
-	const char	*s;
-	long long	acc;
-	int			d;
-	int			have;
-
-	s = *ps;
-	acc = 0;
-	have = 0;
-	while (*s >= '0' && *s <= '9')
-	{
-		d = *s - '0';
-		if (sign == 1 && acc > (LLONG_MAX - d) / 10)
-			return (0);
-		if (sign == -1 && -acc < (LLONG_MIN + d) / 10)
-			return (0);
-		acc = acc * 10 + d;
-		s++;
-		have = 1;
-	}
-	if (!have)
-		return (0);
-	*ps = s;
-	*acc_out = acc;
-	return (1);
-}
-
-static void ms_print_exit(t_minishell *shell)
-{
-    if (!shell->in_pipeline && isatty(STDIN_FILENO))
-        ft_putstr_fd("exit\n", 2);
+	if (!shell->in_pipeline && isatty(STDIN_FILENO))
+		ft_putstr_fd("exit\n", 2);
 }
 
 static void	ms_exit_numerr(t_minishell *shell, char *arg)
@@ -49,6 +33,38 @@ static void	ms_exit_numerr(t_minishell *shell, char *arg)
 	cleanup_and_exit(shell, 2);
 }
 
+static void	exit_no_arg(t_cmd *cmd, t_minishell *shell)
+{
+	ms_print_exit(shell);
+	if (shell->in_pipeline)
+		return ;
+	free_cmd_list(&cmd);
+	cleanup_and_exit(shell, (unsigned char)shell->exit_status);
+}
+
+static int	exit_parse_arg(char *arg, t_cmd *cmd, t_minishell *shell,
+		long long *val)
+{
+	char	*arg_copy;
+
+	if (ft_atoll(arg, val))
+		return (1);
+	arg_copy = ft_strdup(arg);
+	if (!shell->in_pipeline)
+		free_cmd_list(&cmd);
+	if (!arg_copy)
+	{
+		if (shell->in_pipeline)
+		{
+			shell->exit_status = 255;
+			return (0);
+		}
+		cleanup_and_exit(shell, 255);
+	}
+	ms_exit_numerr(shell, arg_copy);
+	return (0);
+}
+
 void	builtin_exit(t_cmd *cmd, t_minishell *shell)
 {
 	char		**av;
@@ -58,32 +74,9 @@ void	builtin_exit(t_cmd *cmd, t_minishell *shell)
 	if (!av || !av[0])
 		return ;
 	if (!av[1])
-	{
-		ms_print_exit(shell);
-		if (shell->in_pipeline)
-			return ;
-		free_cmd_list(&cmd);
-		cleanup_and_exit(shell, (unsigned char)shell->exit_status);
-	}
-	if (!ft_atoll(av[1], &val))
-	{
-		char	*arg_copy;
-
-		arg_copy = ft_strdup(av[1]);
-		if (!shell->in_pipeline)
-			free_cmd_list(&cmd);
-		if (!arg_copy)
-		{
-			if (shell->in_pipeline)
-			{
-				shell->exit_status = 255;
-				return ;
-			}
-			cleanup_and_exit(shell, 255);
-		}
-		ms_exit_numerr(shell, arg_copy);
+		return (exit_no_arg(cmd, shell));
+	if (!exit_parse_arg(av[1], cmd, shell, &val))
 		return ;
-	}
 	if (av[2])
 	{
 		ms_print_exit(shell);

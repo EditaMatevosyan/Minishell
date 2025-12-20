@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:08 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/09 16:12:09 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/20 12:53:19 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,11 @@ char	*cd_expand_tilde(const char *arg, t_minishell *sh)
 	char	*out;
 
 	if (!arg || arg[0] != '~')
-		return (ft_strdup(arg ? arg : ""));
+	{
+		if (arg)
+			return (ft_strdup(arg));
+		return (ft_strdup(""));
+	}
 	home = cd_dup_home(sh);
 	if (!home)
 		return (NULL);
@@ -78,26 +82,6 @@ int	cd_set_oldpwd(t_minishell *sh)
 	const char	*prev = get_env_value(sh->env, "PWD");
 
 	if (prev && set_env_value(&sh->env, "OLDPWD", prev))
-	{
-		sh->exit_status = 1;
-		return (1);
-	}
-	return (0);
-}
-
-int	cd_update_pwd(t_minishell *sh)
-{
-	char	buf[PATH_MAX];
-	char	*cwd;
-
-	cwd = getcwd(buf, sizeof(buf));
-	if (!cwd)
-	{
-		perror("minishell: cd: getcwd");
-		sh->exit_status = 1;
-		return (1);
-	}
-	if (set_env_value(&sh->env, "PWD", cwd))
 	{
 		sh->exit_status = 1;
 		return (1);

@@ -53,7 +53,7 @@ static void process_input(t_minishell *ms, char **input)
     int rc;
     t_cmd *cmds;
 
-    if (!input || !*input)
+    if (!input || !*input || **input == '\0')
         return;
     add_history(*input);
     rc = tokenize_input(ms, input);

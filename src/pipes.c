@@ -108,8 +108,6 @@ void	setup_fds(t_cmd *cmds, int i, int n, int **fds)
     		}
     	}
 	}
-	// change_stdin(cmds);
-    // change_stdout(cmds);
     if (change_stdin(cmds) == -1 || change_stdout(cmds) == -1)
     {
         if (fds)
@@ -152,6 +150,14 @@ int fork_and_execute(t_cmd *cmd_list, t_minishell *ms, int **fds, int n, pid_t *
 
         if (pids[i] == 0)
         {
+            if (cur->invalid_redir)
+            {
+                if (fds)
+                    free_pipes(fds, n);
+                free(pids);
+                cleanup(cmd_list, ms);
+                exit(1);
+            }
             setup_fds(cur, i, n, fds);
 
             if (is_builtin(cur))

@@ -30,8 +30,10 @@ SRCS_NAME = main.c \
 			echo.c \
 			pwd.c \
 			cd.c \
+			cd_exec.c \
 			env.c \
 			exit.c \
+			exit_helper.c \
 			process_heredoc.c \
 			pipes.c \
 			heredoc_utils.c \

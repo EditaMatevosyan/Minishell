@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/26 14:34:09 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/15 13:12:08 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 13:55:48 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,8 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	int		type;
 	int		fd;
 	int		i;
-    int     prev_fd;
+    // int     prev_fd;
+    int     skip = 0;
 
 	if (!*tok)
     {
@@ -267,12 +268,24 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 		fprintf(stderr, "minishell: syntax error near redirection\n");
 		return (-1);
 	}
-	if ((*tok)->expand == 1)
-		value = expand_str((*tok)->value, env);
-	else
-		value = ft_strdup((*tok)->value);
-	if (!value)
-		return (-1);
+
+    value = join_expanded_arg(tok, env, &skip);
+    
+    if (!value || skip)
+    {
+        if (value) free(value);
+        fprintf(stderr, "minishell: ambiguous redirect\n");
+        g_exit_status = 1;
+        cmd->invalid_redir = 1;
+        return (0);
+    }
+    
+    if (cmd->invalid_redir)
+    {
+        free(value);
+        return (0);
+    }
+
 	if (type == T_REDIR_IN)
 	{
 		fd = open(value, O_RDONLY);
@@ -281,7 +294,8 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 			perror(value);
 			free(value);
             g_exit_status = 1;
-			return (-1);
+            cmd->invalid_redir = 1;
+			return (0);
 		}
 		close(fd);
 		free(cmd->infile);
@@ -289,30 +303,54 @@ static int	handle_redirection(t_cmd *cmd, t_token **tok, t_env *env)
 	}
 	else if (type == T_REDIR_OUT || type == T_APPEND)
 	{
+        // Open the file immediately to create it (like bash does)
+        int new_fd;
+        if (append)
+            new_fd = open(value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        else
+            new_fd = open(value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        
+        if (new_fd == -1)
+        {
+            perror(value);
+            free(value);
+            g_exit_status = 1;
+            cmd->invalid_redir = 1;
+            return (0);
+        }
+        close(new_fd);
+
 		if (cmd->outfile)
         {
+            /*
             if (cmd->append)
                 prev_fd = open(cmd->outfile,
                     O_WRONLY | O_CREAT | O_APPEND, 0644);
             else
                 prev_fd = open(cmd->outfile,
                     O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (prev_fd == -1)
-        {
-            perror(cmd->outfile);
-            free(value);
-            g_exit_status = 1;
-            return (-1);
-        }
-        close(prev_fd);
-        free(cmd->outfile);
+            if (prev_fd == -1)
+            {
+                perror(cmd->outfile);
+                free(value);
+                g_exit_status = 1;
+                cmd->invalid_redir = 1;
+                return (0);
+            }
+            close(prev_fd);
+            */
+            free(cmd->outfile);
         }
 
     //store the last redirection
-        cmd->outfile = value;
-        cmd->append = append;
+        if (!cmd->invalid_redir)
+        {
+            cmd->outfile = value;
+            cmd->append = append;
+        }
+        else
+            free(value);
 	}
-	*tok = (*tok)->next;
 	return (0);
 }
 
