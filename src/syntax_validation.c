@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 13:14:07 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 14:18:00 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 19:21:40 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 void	print_syntax_error(const char *token)
 {
-	fprintf(stderr, "minishell: syntax error: %s\n", token);
+	ft_putstr_fd("minishell: syntax error: ", 2);
+	ft_putstr_fd((char *)token, 2);
+	ft_putstr_fd("\n", 2);
 }
 
 int	operator_type(int type)

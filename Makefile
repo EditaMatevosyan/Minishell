@@ -9,6 +9,7 @@ SRCS_DIR = src/
 OBJS_DIR = objs/
 
 SRCS_NAME = main.c \
+			main_process.c \
 			tokenization.c \
 			tokenize_input.c \
 			tokenize_basic.c \
@@ -20,11 +21,16 @@ SRCS_NAME = main.c \
 			libft_ut5.c \
 			copy_env.c \
 			tokenize_env.c \
-			expand_tokens.c \
+			parse_tokens.c \
+			parse_command.c \
+			parse_join.c \
+			redir_helper.c \
+			cmd_free.c \
+			redirections.c \
+			expand_utils.c \
+			expand_str.c \
 			ft_itoa.c \
 			ft_split.c \
-			temp.c \
-			redirections.c \
 			execution_utils1.c \
 			syntax_validation.c \
 			built_in.c \

@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 15:20:00 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 15:20:00 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 19:20:55 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ char	*extract_operator(char *input, int *i)
 {
 	char	*token;
 
-	if ((input[*i] == '>' && input[*i + 1] == '>')
-		|| (input[*i] == '<' && input[*i + 1] == '<'))
+	if ((input[*i] == '>' && input[*i + 1] == '>') || (input[*i] == '<'
+			&& input[*i + 1] == '<'))
 	{
 		token = ft_strndup(input + *i, 2);
 		*i += 2;
@@ -79,4 +79,14 @@ int	handle_operator_token(t_minishell *shell, char *input, int *i)
 	else if (token[0] == '>')
 		add_token(&shell->tokens, new_token(token, T_REDIR_OUT, 1, 0));
 	return (0);
+}
+
+int	handle_unexpected_eof(char **input, char quote)
+{
+	ft_putstr_fd("minishell: unexpected EOF near `", 2);
+	ft_putchar_fd(quote, 2);
+	ft_putstr_fd("`\n", 2);
+	free(*input);
+	*input = NULL;
+	return (-1);
 }

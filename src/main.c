@@ -6,13 +6,13 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/15 15:57:13 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 18:52:53 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int g_exit_status = 0;
+int			g_exit_status = 0;
 
 t_minishell	*minishell_init(char **env)
 {
@@ -21,9 +21,9 @@ t_minishell	*minishell_init(char **env)
 	shell = malloc(sizeof(t_minishell));
 	if (!shell)
 		return (NULL);
-    shell->input = NULL;
-    shell->saved_stdin = NULL;
-    shell->saved_stdout = NULL;
+	shell->input = NULL;
+	shell->saved_stdin = NULL;
+	shell->saved_stdout = NULL;
 	shell->tokens = NULL;
 	shell->in_pipeline = 0;
 	shell->env = copy_env(env);
@@ -35,98 +35,56 @@ t_minishell	*minishell_init(char **env)
 	shell->fd_in = 0;
 	shell->fd_out = 1;
 	shell->fd_heredoc = 0;
-    shell->exit_status = 0;
+	shell->exit_status = 0;
 	return (shell);
 }
 
-static char *read_input(void)
+static char	*read_input(void)
 {
-	char *input;
+	char	*input;
 
-    setup_sigreadline_handlers(); 
+	setup_sigreadline_handlers();
 	input = readline("minishell> ");
 	return (input);
 }
 
-static void process_input(t_minishell *ms, char **input)
+static void	run_shell(t_minishell *shell)
 {
-    int rc;
-    t_cmd *cmds;
+	char	*input;
 
-    if (!input || !*input || **input == '\0')
-        return;
-    add_history(*input);
-    rc = tokenize_input(ms, input);
-    if (rc == -1)
+	while (1)
 	{
-		free_tokens(&ms->tokens);
-        return ;
+		input = read_input();
+		if (!input)
+		{
+			free(shell->input);
+			break ;
+		}
+		shell->input = input;
+		process_input(shell, &input);
+		shell->input = input;
+		free(shell->input);
+		shell->input = NULL;
 	}
-    if (syntax_check(ms->tokens))
-    {
-        ms->exit_status = 2;
-        g_exit_status = 2;
-        free_tokens(&ms->tokens);
-        return ;
-    }
-    if (expand_tokens(ms->tokens, ms->env) == -1)
-    {
-        free_tokens(&ms->tokens);
-        return ;
-    }
-    cmds = parse_tokens(ms->tokens, ms->env);       //this is the head of the linked list
-    if (!cmds)
-    {
-        ms->exit_status = g_exit_status;
-        free_tokens(&ms->tokens);
-        return ;
-    }
-	
-    if (count_commands(cmds) == 1)
-        execute_command(cmds, ms);
-    else
-        execute_pipeline(cmds, ms);
-    free_cmd_list(&cmds);
+	printf("exit\n");
 }
 
-static void run_shell(t_minishell *shell)
+int	main(int argc, char **argv, char **env)
 {
-    char    *input;
-
-    while (1)
-    {
-        input = read_input();
-        if (!input)
-        {
-            free(shell->input);
-            break ;
-        }
-        shell->input = input;
-        process_input(shell, &input);
-        shell->input = input;
-        free(shell->input);
-        shell->input = NULL;
-        free_tokens(&shell->tokens);
-    }
-    printf("exit\n");
-}
-
-int main(int argc, char **argv, char **env)
-{
-    t_minishell	*shell;
+	t_minishell	*shell;
 
 	(void)argv;
 	if (argc != 1)
 		return (1);
 	close_stray_fds();
-    shell = minishell_init(env);
+	shell = minishell_init(env);
 	run_shell(shell);
-    free_tokens(&shell->tokens);
-    free_env(shell->env);
-    free(shell);
-    rl_clear_history();
-    close(STDIN_FILENO);
-    close(STDOUT_FILENO);
-    close(STDERR_FILENO);
+	free_tokens(&shell->tokens);
+	free_env(shell->env);
+	free(shell);
+	rl_clear_history();
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
 	return (0);
 }

@@ -32,8 +32,10 @@ static int	add_quoted_token(t_minishell *shell, char **input_ptr, int *i,
 	quoted = 0;
 	token = extract_quoted(input_ptr, i, &expand, &quoted);
 	if (!token)
-		return (fprintf(stderr,
-				"minishell:syntax error: unexpected end of file\n"), -1);
+	{
+		ft_putstr_fd("minishell:syntax error: unexpected end of file\n", 2);
+		return (-1);
+	}
 	add_token(&shell->tokens, new_token(token, T_WORD, expand, quoted));
 	set_glued_flag_for_last(shell->tokens, !had_space);
 	return (0);

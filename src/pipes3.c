@@ -30,7 +30,9 @@ void	exec_external_or_exit(t_cmd *cur, t_exec_ctx_2 *ctx)
 	path = get_full_path(cur, ctx->ms->env);
 	if (!path)
 	{
-		fprintf(stderr, "minishell: %s: command not found\n", cur->argv[0]);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cur->argv[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 		free_env_array(envp);
 		exit_child(ctx, 127);
 	}

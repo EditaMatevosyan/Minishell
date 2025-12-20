@@ -6,7 +6,7 @@
 /*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 17:26:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 15:30:44 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 19:21:01 by edmatevo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,17 +55,14 @@ static int	read_until_quote(char **input, char quote)
 	{
 		line = readline("> ");
 		if (!line)
-			return (fprintf(stderr,
-					"minishell: unexpected EOF while looking for "
-					"matching `%c`\n",
-					quote), free(*input), *input = NULL, -1);
+			return (handle_unexpected_eof(input, quote));
 		if (append_line(input, line))
 			return (free(*input), *input = NULL, -1);
 		single = 0;
 		doubleq = 0;
 		count_open_quotes(*input, &single, &doubleq);
-		if ((quote == '\'' && single % 2 == 0)
-			|| (quote == '"' && doubleq % 2 == 0))
+		if ((quote == '\'' && single % 2 == 0) || (quote == '"' && doubleq
+				% 2 == 0))
 			break ;
 	}
 	return (0);
