@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:19:18 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 15:33:55 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/20 16:00:49 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,5 +222,19 @@ void	exec_error_msg_free(t_exec_ctx *ctx, t_exec_err *err);
 void	exec_error_errno(t_exec_ctx *ctx, char *path, int code);
 void	exec_stat_or_notfound(t_exec_ctx *ctx, char *path, int has_slash,
 		struct stat *st);
+int	setup_builtin_redirs(t_cmd *cmd, t_minishell *shell,
+		int *saved_stdin, int *saved_stdout);
+void	apply_builtin_heredoc(t_cmd *cmd);
+void	restore_std_fds(t_minishell *shell, int saved_stdin,
+		int saved_stdout);
+void	handle_builtin_redir_failure(t_minishell *shell, int saved_stdin,
+		int saved_stdout);
+int	handle_invalid_redirs(t_cmd *cmd, t_minishell *shell);
+int	try_open_infile(t_cmd *cmd, t_minishell *shell);
+int	try_open_outfile(t_cmd *cmd, t_minishell *shell);
+int	handle_empty_argv(t_cmd *cmd, t_minishell *shell);
+void	close_heredoc_fds(t_cmd *cmd);
+void	execution_after_forking(t_cmd *cmd, t_minishell *shell);
+
 
 #endif
