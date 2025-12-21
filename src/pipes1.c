@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:12:47 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 16:43:08 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/21 13:22:53 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ int	**create_pipes(int n)
 	{
 		fds[i] = malloc(sizeof(int) * 2);
 		if (!fds[i])
-			return (NULL);
+			return (close_fds(fds, i + 1), free_pipes(fds, i + 1), NULL);
 		if (pipe(fds[i]) == -1)
-			return (NULL);
+			return (close_fds(fds, i + 1), free_pipes(fds, i + 2), NULL);
 		i++;
 	}
 	return (fds);
@@ -59,11 +59,12 @@ void	free_pipes(int **fds, int n)
 	i = 0;
 	while (i < n - 1)
 	{
-		if (fds[i])
-			free(fds[i]);
+		free(fds[i]);
+		fds[i] = NULL;
 		i++;
 	}
 	free(fds);
+	fds = NULL;
 }
 
 void	close_fds(int **fds, int n)

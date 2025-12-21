@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 16:26:34 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 18:52:53 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/21 13:21:48 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,8 @@ int	main(int argc, char **argv, char **env)
 		return (1);
 	close_stray_fds();
 	shell = minishell_init(env);
+	if (!shell)
+		return (1);
 	run_shell(shell);
 	free_tokens(&shell->tokens);
 	free_env(shell->env);

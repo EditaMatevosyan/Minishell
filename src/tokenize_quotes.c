@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_quotes.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edmatevo <edmatevo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/26 17:26:22 by edmatevo          #+#    #+#             */
-/*   Updated: 2025/12/20 19:21:01 by edmatevo         ###   ########.fr       */
+/*   Updated: 2025/12/21 13:23:15 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int	read_until_quote(char **input, char quote)
 		if (!line)
 			return (handle_unexpected_eof(input, quote));
 		if (append_line(input, line))
-			return (free(*input), *input = NULL, -1);
+			return (*input = NULL, -1);
 		single = 0;
 		doubleq = 0;
 		count_open_quotes(*input, &single, &doubleq);

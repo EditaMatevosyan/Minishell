@@ -6,7 +6,7 @@
 /*   By: romargar <romargar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 16:13:03 by romargar          #+#    #+#             */
-/*   Updated: 2025/12/20 17:25:43 by romargar         ###   ########.fr       */
+/*   Updated: 2025/12/21 13:23:08 by romargar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@ int	open_infile(t_cmd *cmd)
 {
 	int	fd;
 
-	if (!cmd->infile)
-		return (-1);
 	fd = open(cmd->infile, O_RDONLY);
 	if (fd < 0)
 	{
@@ -32,8 +30,6 @@ int	open_outfile(t_cmd *cmd)
 {
 	int	fd;
 
-	if (!cmd->outfile)
-		return (-1);
 	if (cmd->append)
 		fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else
