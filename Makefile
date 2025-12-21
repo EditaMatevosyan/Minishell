@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Iinc -g3
+CFLAGS = -Wall -Wextra -Werror -Iinc #-g3
 
 HEADERS = inc/minishell.h
 
@@ -86,7 +86,7 @@ fclean: clean
 
 re: fclean all
 
-valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=ignore_readline.supp ./minishell
+# valgrind:
+# 	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --suppressions=ignore_readline.supp ./minishell
 
-.PHONY: all clean fclean re valgrind
+.PHONY: all clean fclean re #valgrind
